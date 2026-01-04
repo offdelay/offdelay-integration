@@ -54,6 +54,17 @@
             "offdelay_integration": {
                 "name": "Switch"
             }
+        },
+        "number": {
+            "global_outside_temperature_today_max": {
+                "name": "Global Outside Temperature Today Max"
+            },
+            "global_outside_weather_condition_today_rank": {
+                "name": "Global Outside Weather Condition Today Rank"
+            },
+            "global_outside_weather_condition_tomorrow_rank": {
+                "name": "Global Outside Weather Condition Tomorrow Rank"
+            }
         }
     }
 }

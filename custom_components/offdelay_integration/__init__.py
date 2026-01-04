@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Custom integration to integrate offdelay_integration with Home Assistant.
 
@@ -28,6 +29,7 @@ PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.BINARY_SENSOR,
     Platform.SWITCH,
+    Platform.NUMBER,
 ]
 
 
