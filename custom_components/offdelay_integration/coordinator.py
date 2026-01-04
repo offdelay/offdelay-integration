@@ -61,15 +61,15 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
     async def _get_weather_data(self) -> dict[str, Any]:
         """Get weather forecast data and compute values."""
         # Check if the weather entity exists
-        if self.hass.states.get("weather.home") is None:
-            message = "Weather entity 'weather.home' is not available"
+        if self.hass.states.get("weather.forecast_home") is None:
+            message = "Weather entity 'weather.forecast_home' is not available"
             raise UpdateFailed(message)
         try:
             # Get hourly forecast for temperature max
             hourly_response = await self.hass.services.async_call(
                 "weather",
                 "get_forecasts",
-                {"entity_id": "weather.home", "type": "hourly"},
+                {"entity_id": "weather.forecast_home", "type": "hourly"},
                 blocking=True,
                 return_response=True,
             )
@@ -78,13 +78,13 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
             daily_response = await self.hass.services.async_call(
                 "weather",
                 "get_forecasts",
-                {"entity_id": "weather.home", "type": "daily"},
+                {"entity_id": "weather.forecast_home", "type": "daily"},
                 blocking=True,
                 return_response=True,
             )
 
             # Process hourly data for max temperature
-            hourly_forecast = hourly_response.get("weather.home", {}).get(
+            hourly_forecast = hourly_response.get("weather.forecast_home", {}).get(
                 "forecast", []
             )
             temperatures = [
@@ -96,7 +96,9 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
             max_temp = max(temperatures) if temperatures else 17.0
 
             # Process daily data for condition ranks
-            daily_forecast = daily_response.get("weather.home", {}).get("forecast", [])
+            daily_forecast = daily_response.get("weather.forecast_home", {}).get(
+                "forecast", []
+            )
             rank_map = {
                 "sunny": 4,
                 "partlycloudy": 3,
@@ -122,7 +124,7 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(message) from err
 
         return {
-            "global_outside_temperature_today_max": max_temp,
-            "global_outside_weather_condition_today_rank": today_rank,
-            "global_outside_weather_condition_tomorrow_rank": tomorrow_rank,
+            "weather_max_temp_today": max_temp,
+            "weather_condition_rank_today": today_rank,
+            "weather_condition_rank_tomorrow": tomorrow_rank,
         }

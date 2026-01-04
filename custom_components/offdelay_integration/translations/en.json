@@ -43,6 +43,15 @@
         "sensor": {
             "offdelay_integration": {
                 "name": "Sensor"
+            },
+            "weather_max_temp_today": {
+                "name": "Weather Max Temp Today"
+            },
+            "weather_condition_rank_today": {
+                "name": "Weather Condition Rank Today"
+            },
+            "weather_condition_rank_tomorrow": {
+                "name": "Weather Condition Rank Tomorrow"
             }
         },
         "binary_sensor": {
@@ -53,17 +62,6 @@
         "switch": {
             "offdelay_integration": {
                 "name": "Switch"
-            }
-        },
-        "number": {
-            "global_outside_temperature_today_max": {
-                "name": "Global Outside Temperature Today Max"
-            },
-            "global_outside_weather_condition_today_rank": {
-                "name": "Global Outside Weather Condition Today Rank"
-            },
-            "global_outside_weather_condition_tomorrow_rank": {
-                "name": "Global Outside Weather Condition Tomorrow Rank"
             }
         }
     }

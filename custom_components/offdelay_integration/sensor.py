@@ -1,10 +1,16 @@
+#!/usr/bin/env python3
 """Sensor platform for offdelay_integration."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+)
+from homeassistant.const import UnitOfTemperature
 
 from .entity import IntegrationBlueprintEntity
 
@@ -16,9 +22,20 @@ if TYPE_CHECKING:
 
 ENTITY_DESCRIPTIONS = (
     SensorEntityDescription(
-        key="offdelay_integration",
-        translation_key="offdelay_integration",
-        icon="mdi:format-quote-close",
+        key="weather_max_temp_today",
+        translation_key="weather_max_temp_today",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+    ),
+    SensorEntityDescription(
+        key="weather_condition_rank_today",
+        translation_key="weather_condition_rank_today",
+        icon="mdi:weather-sunny",
+    ),
+    SensorEntityDescription(
+        key="weather_condition_rank_tomorrow",
+        translation_key="weather_condition_rank_tomorrow",
+        icon="mdi:weather-sunny",
     ),
 )
 
@@ -42,6 +59,6 @@ class IntegrationBlueprintSensor(IntegrationBlueprintEntity, SensorEntity):
     """offdelay_integration Sensor class."""
 
     @property
-    def native_value(self) -> str | None:
+    def native_value(self) -> float | int | None:
         """Return the native value of the sensor."""
-        return self.coordinator.data.get("body")
+        return self.coordinator.data.get(self.entity_description.key)
