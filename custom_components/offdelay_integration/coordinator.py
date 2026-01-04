@@ -60,16 +60,20 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _get_weather_data(self) -> dict[str, Any]:
         """Get weather forecast data and compute values."""
-        # Check if the weather entity exists
-        if self.hass.states.get("weather.forecast_home") is None:
-            message = "Weather entity 'weather.forecast_home' is not available"
+        # Determine which weather entity to use
+        if self.hass.states.get("weather.forecast_home") is not None:
+            weather_entity = "weather.forecast_home"
+        elif self.hass.states.get("weather.home") is not None:
+            weather_entity = "weather.home"
+        else:
+            message = "No weather entity found (weather.home or weather.forecast_home)"
             raise UpdateFailed(message)
         try:
             # Get hourly forecast for temperature max
             hourly_response = await self.hass.services.async_call(
                 "weather",
                 "get_forecasts",
-                {"entity_id": "weather.forecast_home", "type": "hourly"},
+                {"entity_id": weather_entity, "type": "hourly"},
                 blocking=True,
                 return_response=True,
             )
@@ -78,13 +82,13 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
             daily_response = await self.hass.services.async_call(
                 "weather",
                 "get_forecasts",
-                {"entity_id": "weather.forecast_home", "type": "daily"},
+                {"entity_id": weather_entity, "type": "daily"},
                 blocking=True,
                 return_response=True,
             )
 
             # Process hourly data for max temperature
-            hourly_forecast = hourly_response.get("weather.forecast_home", {}).get(
+            hourly_forecast = hourly_response.get(weather_entity, {}).get(
                 "forecast", []
             )
             temperatures = [
@@ -96,9 +100,7 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
             max_temp = max(temperatures) if temperatures else 17.0
 
             # Process daily data for condition ranks
-            daily_forecast = daily_response.get("weather.forecast_home", {}).get(
-                "forecast", []
-            )
+            daily_forecast = daily_response.get(weather_entity, {}).get("forecast", [])
             rank_map = {
                 "sunny": 4,
                 "partlycloudy": 3,
@@ -127,4 +129,6 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
             "weather_max_temp_today": max_temp,
             "weather_condition_rank_today": today_rank,
             "weather_condition_rank_tomorrow": tomorrow_rank,
+            "weather_condition_today": today_condition,
+            "weather_condition_tomorrow": tomorrow_condition,
         }

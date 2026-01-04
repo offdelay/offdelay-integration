@@ -41,9 +41,6 @@
     },
     "entity": {
         "sensor": {
-            "offdelay_integration": {
-                "name": "Sensor"
-            },
             "weather_max_temp_today": {
                 "name": "Weather Max Temp Today"
             },
@@ -52,6 +49,12 @@
             },
             "weather_condition_rank_tomorrow": {
                 "name": "Weather Condition Rank Tomorrow"
+            },
+            "weather_condition_today": {
+                "name": "Weather Condition Today"
+            },
+            "weather_condition_tomorrow": {
+                "name": "Weather Condition Tomorrow"
             }
         },
         "binary_sensor": {

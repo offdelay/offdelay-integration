@@ -37,6 +37,16 @@ ENTITY_DESCRIPTIONS = (
         translation_key="weather_condition_rank_tomorrow",
         icon="mdi:weather-sunny",
     ),
+    SensorEntityDescription(
+        key="weather_condition_today",
+        translation_key="weather_condition_today",
+        icon="mdi:weather-partly-cloudy",
+    ),
+    SensorEntityDescription(
+        key="weather_condition_tomorrow",
+        translation_key="weather_condition_tomorrow",
+        icon="mdi:weather-partly-cloudy",
+    ),
 )
 
 
