@@ -10,16 +10,16 @@ if TYPE_CHECKING:
     from homeassistant.loader import Integration
 
     from .api import IntegrationBlueprintApiClient
-    from .coordinator import BlueprintDataUpdateCoordinator
+    from .coordinator import OffdelayDataUpdateCoordinator
 
 
-type IntegrationBlueprintConfigEntry = ConfigEntry[IntegrationBlueprintData]
+type OffdelayIntegrationConfigEntry = ConfigEntry[OffdelayIntegrationData]
 
 
 @dataclass
-class IntegrationBlueprintData:
-    """Data for the Blueprint integration."""
+class OffdelayIntegrationData:
+    """Data for the Offdelay integration."""
 
     client: IntegrationBlueprintApiClient
-    coordinator: BlueprintDataUpdateCoordinator
+    coordinator: OffdelayDataUpdateCoordinator
     integration: Integration

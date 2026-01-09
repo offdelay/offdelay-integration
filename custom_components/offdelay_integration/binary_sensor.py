@@ -10,13 +10,13 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 
-from .entity import IntegrationBlueprintEntity
+from .entity import OffdelayIntegrationEntity
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-    from .data import IntegrationBlueprintConfigEntry
+    from .data import OffdelayIntegrationConfigEntry
 
 ENTITY_DESCRIPTIONS = (
     BinarySensorEntityDescription(
@@ -29,12 +29,12 @@ ENTITY_DESCRIPTIONS = (
 
 async def async_setup_entry(
     hass: HomeAssistant,  # noqa: ARG001 Unused function argument: `hass`
-    entry: IntegrationBlueprintConfigEntry,
+    entry: OffdelayIntegrationConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the binary_sensor platform."""
     async_add_entities(
-        IntegrationBlueprintBinarySensor(
+        OffdelayIntegrationBinarySensor(
             coordinator=entry.runtime_data.coordinator,
             entity_description=entity_description,
         )
@@ -42,7 +42,7 @@ async def async_setup_entry(
     )
 
 
-class IntegrationBlueprintBinarySensor(IntegrationBlueprintEntity, BinarySensorEntity):
+class OffdelayIntegrationBinarySensor(OffdelayIntegrationEntity, BinarySensorEntity):
     """offdelay_integration binary_sensor class."""
 
     @property

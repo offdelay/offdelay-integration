@@ -8,13 +8,13 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import ATTRIBUTION
-from .coordinator import BlueprintDataUpdateCoordinator
+from .coordinator import OffdelayDataUpdateCoordinator
 
 if TYPE_CHECKING:
     from homeassistant.helpers.entity import EntityDescription
 
 
-class IntegrationBlueprintEntity(CoordinatorEntity[BlueprintDataUpdateCoordinator]):
+class OffdelayIntegrationEntity(CoordinatorEntity[OffdelayDataUpdateCoordinator]):
     """BlueprintEntity class."""
 
     _attr_attribution = ATTRIBUTION
@@ -22,7 +22,7 @@ class IntegrationBlueprintEntity(CoordinatorEntity[BlueprintDataUpdateCoordinato
 
     def __init__(
         self,
-        coordinator: BlueprintDataUpdateCoordinator,
+        coordinator: OffdelayDataUpdateCoordinator,
         entity_description: EntityDescription,
     ) -> None:
         """Initialize the base entity."""

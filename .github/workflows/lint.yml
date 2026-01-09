@@ -29,7 +29,7 @@ jobs:
           version: "0.9.3"
 
       - name: Install requirements
-        run: scripts/bootstrap
+        run: bash scripts/bootstrap
 
       - name: Lint check
-        run: scripts/lint-check
+        run: bash scripts/lint-check
