@@ -1,4 +1,4 @@
-"""BlueprintEntity class."""
+"""Base entity for Offdelay integration."""
 
 from __future__ import annotations
 
@@ -15,10 +15,10 @@ if TYPE_CHECKING:
 
 
 class OffdelayIntegrationEntity(CoordinatorEntity[OffdelayDataUpdateCoordinator]):
-    """BlueprintEntity class."""
+    """Base entity for all Offdelay entities."""
 
     _attr_attribution = ATTRIBUTION
-    _attr_has_entity_name = True
+    _attr_has_entity_name = False
 
     def __init__(
         self,
@@ -27,11 +27,14 @@ class OffdelayIntegrationEntity(CoordinatorEntity[OffdelayDataUpdateCoordinator]
     ) -> None:
         """Initialize the base entity."""
         super().__init__(coordinator)
+
         self.entity_description = entity_description
-        # Include entity description key in unique_id to support multiple entities
+
         self._attr_unique_id = (
             f"{coordinator.config_entry.entry_id}_{entity_description.key}"
         )
+        self._attr_name = entity_description.key
+
         self._attr_device_info = DeviceInfo(
             identifiers={
                 (
@@ -39,7 +42,7 @@ class OffdelayIntegrationEntity(CoordinatorEntity[OffdelayDataUpdateCoordinator]
                     coordinator.config_entry.entry_id,
                 ),
             },
-            name="Offdelay Integration",
+            name=coordinator.config_entry.data.get("name", "Offdelay"),
             manufacturer="Offdelay Integration",
             model=coordinator.data.get("model", "Unknown"),
         )

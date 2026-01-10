@@ -16,7 +16,6 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import IntegrationBlueprintApiClient
-from .const import DOMAIN, LOGGER
 from .coordinator import OffdelayDataUpdateCoordinator
 from .data import OffdelayIntegrationData
 
@@ -38,12 +37,13 @@ async def async_setup_entry(
     entry: OffdelayIntegrationConfigEntry,
 ) -> bool:
     """Set up this integration using UI."""
-    coordinator = OffdelayDataUpdateCoordinator(
-        hass=hass,
-        logger=LOGGER,
-        name=DOMAIN,
-        update_interval=timedelta(hours=1),
-    )
+    # Create coordinator (logger and name are positional)
+    coordinator = OffdelayDataUpdateCoordinator(hass, entry)
+
+    # Optionally set periodic update interval
+    coordinator.update_interval = timedelta(hours=1)
+
+    # Initialize runtime data
     entry.runtime_data = OffdelayIntegrationData(
         client=IntegrationBlueprintApiClient(
             username=entry.data[CONF_USERNAME],
@@ -54,9 +54,10 @@ async def async_setup_entry(
         coordinator=coordinator,
     )
 
-    # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
+    # Perform first refresh
     await coordinator.async_config_entry_first_refresh()
 
+    # Forward platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 

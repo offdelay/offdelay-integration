@@ -55,6 +55,9 @@
             },
             "weather_condition_tomorrow": {
                 "name": "Weather Condition Tomorrow"
+            },
+            "home_status": {
+                "name": "Home Status"
             }
         },
         "binary_sensor": {
@@ -63,8 +66,8 @@
             }
         },
         "switch": {
-            "offdelay_integration": {
-                "name": "Switch"
+            "home_vacation": {
+                "name": "Home Vacation"
             }
         }
     }

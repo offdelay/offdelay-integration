@@ -47,6 +47,11 @@ ENTITY_DESCRIPTIONS = (
         translation_key="weather_condition_tomorrow",
         icon="mdi:weather-partly-cloudy",
     ),
+    SensorEntityDescription(
+        key="home_status",
+        translation_key="home_status",
+        icon="mdi:home",
+    ),
 )
 
 
@@ -69,6 +74,6 @@ class OffdelayIntegrationSensor(OffdelayIntegrationEntity, SensorEntity):
     """offdelay_integration Sensor class."""
 
     @property
-    def native_value(self) -> float | int | None:
+    def native_value(self) -> float | int | str | None:
         """Return the native value of the sensor."""
         return self.coordinator.data.get(self.entity_description.key)

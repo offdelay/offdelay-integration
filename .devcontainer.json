@@ -4,22 +4,15 @@
     "postCreateCommand": "scripts/setup",
     "postStartCommand": "scripts/motd",
     "containerEnv": {
-        // Enable asyncio debug mode for easier debugging of async code
         "PYTHONASYNCIODEBUG": "1",
-        // Ensure Python output is sent straight to terminal (e.g. for logging)
         "PYTHONUNBUFFERED": "1",
-        // Prevent Python from writing .pyc files to disk
         "PYTHONDONTWRITEBYTECODE": "1"
     },
-    "forwardPorts": [
-        8123
+    "runArgs": [
+        "-p",
+        "8123:8123"
     ],
-    "portsAttributes": {
-        "8123": {
-            "label": "Home Assistant",
-            "onAutoForward": "notify"
-        }
-    },
+    "forwardPorts": [],
     "customizations": {
         "vscode": {
             "extensions": [

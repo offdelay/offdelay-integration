@@ -5,12 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.components.binary_sensor import (
-    BinarySensorDeviceClass,
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
-
-from .entity import OffdelayIntegrationEntity
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -18,34 +15,36 @@ if TYPE_CHECKING:
 
     from .data import OffdelayIntegrationConfigEntry
 
+from .entity import OffdelayIntegrationEntity
+
 ENTITY_DESCRIPTIONS = (
     BinarySensorEntityDescription(
-        key="offdelay_integration",
-        translation_key="offdelay_integration",
-        device_class=BinarySensorDeviceClass.CONNECTIVITY,
+        key="is_home",
+        translation_key="is_home",
+        icon="mdi:home-account",
     ),
 )
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,  # noqa: ARG001 Unused function argument: `hass`
+    hass: HomeAssistant,  # noqa: ARG001
     entry: OffdelayIntegrationConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the binary_sensor platform."""
+    """Set up binary sensors for this integration."""
     async_add_entities(
         OffdelayIntegrationBinarySensor(
             coordinator=entry.runtime_data.coordinator,
-            entity_description=entity_description,
+            entity_description=description,
         )
-        for entity_description in ENTITY_DESCRIPTIONS
+        for description in ENTITY_DESCRIPTIONS
     )
 
 
 class OffdelayIntegrationBinarySensor(OffdelayIntegrationEntity, BinarySensorEntity):
-    """offdelay_integration binary_sensor class."""
+    """Binary sensor representing home status or other flag."""
 
     @property
     def is_on(self) -> bool:
-        """Return true if the binary_sensor is on."""
-        return self.coordinator.data.get("title", "") == "foo"
+        """Return True if the sensor is on, False otherwise."""
+        return self.coordinator.data.get(self.entity_description.key, False)

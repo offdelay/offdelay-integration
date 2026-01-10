@@ -17,6 +17,8 @@ ignore = [
     "ISC001",  # incompatible with formatter
     "EXE001",  # Executable files without shebang (WSL/Windows compatibility)
     "EXE002",  # Executable files without shebang (WSL/Windows compatibility)
+    "PGH003",  # Allow type: ignore comments for third-party code
+    "D102",    # Missing docstring in public method
 ]
 
 [tool.ruff.lint.flake8-pytest-style]
