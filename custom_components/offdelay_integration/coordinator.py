@@ -43,7 +43,8 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Stored state
         self.data = {
             "home_status": "Home",
-            "home_vacation": False,
+            "vacation_mode": False,
+            "guest_mode": False,
         }
 
         # For detecting "coming back from holiday"
@@ -52,7 +53,7 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         async_track_state_change_event(
             self.hass,
-            ["zone.home", "zone.near_home", "switch.home_vacation"],
+            ["zone.home", "zone.near_home", "switch.vacation_mode"],
             self._async_zone_or_vacation_changed,
         )
 
@@ -197,12 +198,12 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         home = num("zone.home")
         near = num("zone.near_home")
 
-        vacation_entity = self.hass.states.get("switch.home_vacation")
+        vacation_entity = self.hass.states.get("switch.vacation_mode")
         vacation = vacation_entity is not None and vacation_entity.state == STATE_ON
 
         # Auto-clear vacation if coming back from 0 → >0
         if (
-            self.data.get("home_vacation")
+            self.data.get("vacation_mode")
             and self._prev_home == 0.0
             and self._prev_near == 0.0
             and (home > 0 or near > 0)
@@ -226,11 +227,13 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         return {
             "home_status": status,
-            "home_vacation": vacation,
+            "vacation_mode": vacation,
+            "guest_mode": self.data.get("guest_mode", False),
         }
 
-    async def async_set_home_vacation(self, *, value: bool) -> None:
-        self.data["home_vacation"] = value
+    async def async_set_home_data(self, key: str, value: Any) -> None:
+        """Set a key-value pair in the coordinator's data."""
+        self.data[key] = value
         home = self._update_home_data()
         self.data.update(home)
         self.async_set_updated_data(self.data)

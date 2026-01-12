@@ -20,9 +20,14 @@ if TYPE_CHECKING:
 
 ENTITY_DESCRIPTIONS = (
     SwitchEntityDescription(
-        key="home_vacation",
-        translation_key="home_vacation",
+        key="vacation_mode",
+        translation_key="vacation_mode",
         icon="mdi:home-export-outline",
+    ),
+    SwitchEntityDescription(
+        key="guest_mode",
+        translation_key="guest_mode",
+        icon="mdi:account-convert-outline",
     ),
 )
 
@@ -34,7 +39,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up the switch platform."""
     async_add_entities(
-        OffdelayIntegrationHomeVacationSwitch(
+        OffdelayIntegrationModeSwitch(
             coordinator=entry.runtime_data.coordinator,
             entity_description=description,
         )
@@ -42,15 +47,22 @@ async def async_setup_entry(
     )
 
 
-class OffdelayIntegrationHomeVacationSwitch(OffdelayIntegrationEntity, SwitchEntity):
-    """Home Vacation switch."""
+class OffdelayIntegrationModeSwitch(OffdelayIntegrationEntity, SwitchEntity):
+    """Offdelay mode switch."""
 
     @property
     def is_on(self) -> bool:
+        """Return true if the switch is on."""
         return bool(self.coordinator.data.get(self.entity_description.key))
 
     async def async_turn_on(self, **kwargs: Any) -> None:  # noqa: ARG002
-        await self.coordinator.async_set_home_vacation(value=True)
+        """Turn the switch on."""
+        await self.coordinator.async_set_home_data(
+            self.entity_description.key, value=True
+        )
 
     async def async_turn_off(self, **kwargs: Any) -> None:  # noqa: ARG002
-        await self.coordinator.async_set_home_vacation(value=False)
+        """Turn the switch off."""
+        await self.coordinator.async_set_home_data(
+            self.entity_description.key, value=False
+        )

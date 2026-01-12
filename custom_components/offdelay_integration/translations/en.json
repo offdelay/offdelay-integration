@@ -42,19 +42,19 @@
     "entity": {
         "sensor": {
             "weather_max_temp_today": {
-                "name": "Weather Max Temp Today"
+                "name": "Max Temp Today"
             },
             "weather_condition_rank_today": {
-                "name": "Weather Condition Rank Today"
+                "name": "Condition Rank Today"
             },
             "weather_condition_rank_tomorrow": {
-                "name": "Weather Condition Rank Tomorrow"
+                "name": "Condition Rank Tomorrow"
             },
             "weather_condition_today": {
-                "name": "Weather Condition Today"
+                "name": "Condition Today"
             },
             "weather_condition_tomorrow": {
-                "name": "Weather Condition Tomorrow"
+                "name": "Condition Tomorrow"
             },
             "home_status": {
                 "name": "Home Status"
@@ -66,8 +66,11 @@
             }
         },
         "switch": {
-            "home_vacation": {
-                "name": "Home Vacation"
+            "vacation_mode": {
+                "name": "Vacation mode"
+            },
+            "guest_mode": {
+                "name": "Guest Mode"
             }
         }
     }

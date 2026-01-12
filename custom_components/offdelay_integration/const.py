@@ -4,5 +4,5 @@ from logging import Logger, getLogger
 
 LOGGER: Logger = getLogger(__package__)
 
-DOMAIN = "offdelay_integration"
-ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
+DOMAIN = "offdelay"
+ATTRIBUTION = "Data provided by http://offdelay.be/"

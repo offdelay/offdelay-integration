@@ -17,9 +17,9 @@
         "vscode": {
             "extensions": [
                 "charliermarsh.ruff",
-                "github.vscode-pull-request-github",
                 "ms-python.python",
                 "ms-python.vscode-pylance",
+                "google.geminicodeassist",
                 "ryanluker.vscode-coverage-gutters"
             ],
             "settings": {
@@ -52,7 +52,7 @@
                 ],
                 "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
                 "python.analysis.extraPaths": [
-                    "${workspaceFolder}/.venv/lib/python3.13/site-packages"
+                    "${workspaceFolder}/custom_components"
                 ],
                 "[python]": {
                     "editor.defaultFormatter": "charliermarsh.ruff"

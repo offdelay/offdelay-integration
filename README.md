@@ -1,123 +1,74 @@
-# Offdelay Integration
+# Offdelay Integration for Home Assistant
 
-This is a blueprint for creating a Home Assistant custom integration. It includes the patterns and features you'll want when building an integration, so you can focus on your specific device or service instead of boilerplate.
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/custom-components/hacs)
+[![GitHub Release](https://img.shields.io/github/v/release/offdelay/offdelay-integration)](https://github.com/offdelay/offdelay-integration/releases)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/offdelay/offdelay-integration/lint.yml)](https://github.com/offdelay/offdelay-integration/actions)
 
-HAVE FUN! 😎
+This custom integration for Home Assistant provides tools to improve the ease of installation for a new Home Assistant instance with the offdelay logic. Instead of manually creating automations and helper sensors, this integration provides a more manageable way to create and update these Home Assistant tools.
 
-## Why?
+## Prerequisites
 
-By having custom integrations follow a common structure and include common features, it's easier for developers to help each other and for users to use them. This blueprint includes modern Home Assistant patterns so you don't have to figure them out yourself.
+Before installing, please ensure you have the following set up in your Home Assistant instance:
 
-If you think something is missing that would help other developers, please open a PR to add it.
+1.  **Meteorologisk institutt (Met.no) Integration**: This integration relies on a weather provider for forecast data. The [Met.no integration](https://www.home-assistant.io/integrations/met/) is the recommended provider. You will need a weather entity named `weather.forecast_home` or `weather.home`.
+2.  **Zones**: You must create two [zones](https://www.home-assistant.io/integrations/zone/):
+    *   `zone.home`: Your primary home location.
+    *   `zone.near_home`: An area around your home to detect when you are close.
 
-## What's included?
+## Installation
 
-This blueprint demonstrates:
+Because this is not part of the default HACS repository, you must add it as a custom repository.
 
-- Config flow for user setup with validation
-- Reconfiguration support to update credentials
-- Translation keys for proper internationalization
-- Diagnostics support for troubleshooting
-- DataUpdateCoordinator pattern for efficient API polling
-- Multiple entity types (sensor, binary sensor, switch)
-- Async API client with proper error handling
-- Modern development tooling (Ruff, pre-commit, dev container)
+[![Open your Home Assistant instance and open a repository with the HACS logo.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=offdelay&repository=offdelay-integration&category=integration)
 
-## Quick start
+1.  Go to HACS &rarr; Integrations &rarr; Click the three dots in the top right.
+2.  Select "Custom repositories".
+3.  Add the URL to this repository (`https://github.com/offdelay/offdelay-integration`) in the "Repository" field.
+4.  Select "Integration" as the category.
+5.  Click "ADD".
+6.  The "Offdelay Integration" will now show up. Click "INSTALL".
+7.  Restart Home Assistant.
 
-1. Create a new repository using this template (click "Use this template" in GitHub)
-1. Open your new repository in Visual Studio Code devcontainer (preferably with the "`Dev Containers: Clone Repository in Named Container Volume...`" option)
-1. Rename all instances of `offdelay_integration` to `custom_components/<your_integration_domain>`
-1. Rename all instances of `Offdelay Integration` to `<Your Integration Name>`
-1. Run `scripts/develop` to start Home Assistant and test your integration
+## Configuration
 
-## Development scripts
+After installation, the integration can be configured through the Home Assistant UI.
 
-This repository uses the [Scripts to Rule Them All](https://github.com/github/scripts-to-rule-them-all) pattern:
+[![Add Integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=offdelay_integration)
 
-- `scripts/bootstrap` - One-time setup after cloning (installs dependencies and pre-commit hooks)
-- `scripts/setup` - Set up the project for the first time after cloning
-- `scripts/update` - Re-initialize dependencies after pulling new changes
-- `scripts/lint` - Run linting and auto-format code
-- `scripts/lint-check` - Check linting without making changes (for CI)
-- `scripts/develop` - Start Home Assistant in development mode
-- `scripts/help` - Display available scripts and their descriptions
+1.  Navigate to **Settings** &rarr; **Devices & Services**.
+2.  Click **+ Add Integration**.
+3.  Search for "Offdelay Integration" and select it.
+4.  Follow the on-screen instructions to complete the setup.
 
-All scripts use the modern [uv](https://github.com/astral-sh/uv) package manager for faster dependency management.
+## Entities Provided
 
-## What's in the blueprint?
+This integration creates the following entities:
 
-This repository contains multiple files to help you get started:
+### Sensors
 
-File | Purpose | Documentation
--- | -- | --
-`.devcontainer.json` | Development container configuration for VS Code | [Documentation](https://code.visualstudio.com/docs/remote/containers)
-`.pre-commit-config.yaml` | Pre-commit hooks for automatic code quality checks | [Documentation](https://pre-commit.com/)
-`pyproject.toml` | Python project configuration with Ruff settings | [Documentation](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)
-`requirements.txt` | Python packages for development | [Documentation](https://pip.pypa.io/en/stable/user_guide/#requirements-files)
-`scripts/*` | Development scripts following Scripts to Rule Them All pattern | [Documentation](https://github.com/github/scripts-to-rule-them-all)
-`.github/ISSUE_TEMPLATE/*.yml` | Templates for issue tracking | [Documentation](https://help.github.com/en/github/building-a-strong-community/configuring-issue-templates-for-your-repository)
-`CONTRIBUTING.md` | Contribution guidelines | [Documentation](https://help.github.com/en/github/building-a-strong-community/setting-guidelines-for-repository-contributors)
-`LICENSE` | Project license | [Documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/licensing-a-repository)
-`README.md` | This file | [Documentation](https://help.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax)
+- **`sensor.home_status`**: Shows the current status of the home.
+  - **State**: `Home`, `NearHome`, `Away`, or `Vacation`.
+  - **Use**: Ideal for creating automations based on household presence.
 
-## Features explained
+- **`sensor.weather_max_temp_today`**: The forecasted maximum temperature for the current day.
+  - **Unit**: `°C`
 
-### Config flow
+- **`sensor.weather_condition_rank_today`**: A numerical rank for today's forecasted weather.
+  - **Details**: A higher number is better (e.g., sunny=4, rainy=1). This helps in creating automations based on "good" vs "bad" weather without dealing with multiple condition strings.
 
-The [config_flow.py](custom_components/offdelay_integration/config_flow.py) file handles user setup. Users can add the integration through the UI, enter credentials, and the config flow validates them before creating a config entry.
+- **`sensor.weather_condition_rank_tomorrow`**: Same as above, but for tomorrow's forecast.
 
-The config flow also supports reconfiguration, so users can update their credentials without removing and re-adding the integration.
+- **`sensor.weather_condition_today`**: The friendly name of the forecasted weather condition for today.
+  - **Example States**: `sunny`, `cloudy`, `rainy`.
 
-### Translation keys
+- **`sensor.weather_condition_tomorrow`**: The friendly name of the forecasted weather condition for tomorrow.
 
-All user-facing strings use translation keys instead of hardcoded text. This makes it easy to support multiple languages. See [translations/en.json](custom_components/offdelay_integration/translations/en.json) for the structure.
+### Binary Sensors
 
-### DataUpdateCoordinator
+- **`binary_sensor.is_home`**: A simple sensor indicating if anyone is home.
+  - **State**: `on` when anyone is in the `home` zone, `off` otherwise.
 
-The [coordinator.py](custom_components/offdelay_integration/coordinator.py) file uses DataUpdateCoordinator to fetch data efficiently. Instead of each entity polling the API separately, the coordinator fetches data once and shares it with all entities. This reduces API calls and handles errors consistently.
+### Switch
 
-### Diagnostics
-
-The [diagnostics.py](custom_components/offdelay_integration/diagnostics.py) file provides debug information that users can download from the UI. This helps with troubleshooting without exposing sensitive data.
-
-### Entity platforms
-
-The blueprint includes three entity types to demonstrate different patterns:
-
-- [sensor.py](custom_components/offdelay_integration/sensor.py) - Shows how to create a sensor with string values
-- [binary_sensor.py](custom_components/offdelay_integration/binary_sensor.py) - Shows a binary sensor with device class
-- [switch.py](custom_components/offdelay_integration/switch.py) - Shows a controllable entity that interacts with the API
-
-### API client
-
-The [api.py](custom_components/offdelay_integration/api.py) file provides an async API client with:
-
-- Modern asyncio timeout handling (using `asyncio.timeout` instead of deprecated `async_timeout`)
-- Proper error handling with custom exceptions
-- Authentication support
-
-### Pre-commit hooks
-
-The repository uses [pre-commit](https://pre-commit.com/) to automatically check and format code before commits. The hooks run Ruff for fast linting and formatting. They're installed automatically when you run `scripts/bootstrap`.
-
-### Development container
-
-The [.devcontainer.json](.devcontainer.json) file configures a VS Code development container with Python 3.13, all required extensions, and proper settings. This gives you a working development environment without manual setup.
-
-## Next steps
-
-These are some next steps you may want to look into:
-
-- Add tests to your integration, [`pytest-homeassistant-custom-component`](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component) can help you get started
-- Add brand images (logo/icon) to https://github.com/home-assistant/brands
-- Create your first release
-- Share your integration on the [Home Assistant Forum](https://community.home-assistant.io/)
-- Submit your integration to [HACS](https://hacs.xyz/docs/publish/start)
-
-## Resources
-
-- [Home Assistant developer documentation](https://developers.home-assistant.io/)
-- [Creating a custom integration](https://developers.home-assistant.io/docs/creating_component_index)
-- [Config flow documentation](https://developers.home-assistant.io/docs/config_entries_config_flow_handler)
-- [DataUpdateCoordinator documentation](https://developers.home-assistant.io/docs/integration_fetching_data)
+- **`switch.home_vacation`**: An input switch to manually control vacation mode.
+  - **Action**: Turning this switch `on` will force the `sensor.home_status` to `Vacation`.
