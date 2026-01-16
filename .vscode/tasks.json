@@ -8,6 +8,25 @@
             "problemMatcher": [
                 "$python"
             ]
+        },
+        {
+            "label": "Run Home Assistant (Develop)",
+            "type": "shell",
+            "command": "source ${workspaceFolder}/.venv/bin/activate && ${workspaceFolder}/scripts/develop",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

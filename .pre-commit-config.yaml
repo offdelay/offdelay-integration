@@ -13,6 +13,7 @@ repos:
         language: system
         types: [python]
         require_serial: true
+        exclude: scripts/develop_debug\.py
 
       # Run the Ruff formatter
       - id: ruff-format

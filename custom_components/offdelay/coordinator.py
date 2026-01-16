@@ -198,12 +198,13 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         home = num("zone.home")
         near = num("zone.near_home")
 
-        vacation_entity = self.hass.states.get("switch.vacation_mode")
-        vacation = vacation_entity is not None and vacation_entity.state == STATE_ON
+        vacation_entity = self.hass.states.get("switch.offdelay_vacation_mode")
+        vacation = self.data.get("vacation_mode")
 
         # Auto-clear vacation if coming back from 0 → >0
         if (
-            self.data.get("vacation_mode")
+            vacation_entity is not None
+            and vacation_entity.state == STATE_ON
             and self._prev_home == 0.0
             and self._prev_near == 0.0
             and (home > 0 or near > 0)
@@ -212,12 +213,12 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             vacation = False
 
         # Compute status
-        if home > 0:
+        if vacation:
+            status = "Vacation"
+        elif home > 0:
             status = "Home"
         elif near > 0:
             status = "NearHome"
-        elif vacation:
-            status = "Vacation"
         else:
             status = "Away"
 
