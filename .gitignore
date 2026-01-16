@@ -1,21 +1,23 @@
-# artifacts
-__pycache__
-.pytest*
-*.egg-info
-*/build/*
-*/dist/*
-.venv
+# -----------------------------
+# Python artifacts
+# -----------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.pytest_cache/
+*.mypy_cache/
+.venv/
 
+# Build / packaging
+build/
+dist/
+*.wheel
+*.tar.gz
 
-# misc
-.coverage
-.vscode
-coverage.xml
-.ruff_cache
-uv.lock
-
-
+# -----------------------------
 # Home Assistant configuration
+# -----------------------------
+# Ignore all config except configuration.yaml
 config/*
 !config/configuration.yaml
 
@@ -27,7 +29,24 @@ config/*
 home-assistant.log*
 home-assistant_v2.db*
 
-# Temporary files
+# -----------------------------
+# Coverage / Linting / Misc
+# -----------------------------
+.coverage
+coverage.xml
+.ruff_cache
+uv.lock
+
+# -----------------------------
+# VS Code and IDEs
+# -----------------------------
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# -----------------------------
+# Temporary / OS files
+# -----------------------------
 *.tmp
 *.temp
 .DS_Store

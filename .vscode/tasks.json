@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Lint Check",
+            "type": "shell",
+            "command": "scripts/lint-check",
+            "problemMatcher": [
+                "$python"
+            ]
+        }
+    ]
+}
