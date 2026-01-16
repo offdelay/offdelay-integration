@@ -1,4 +1,4 @@
-"""Custom types for offdelay_integration."""
+"""Custom types for offdelay."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ type OffdelayIntegrationConfigEntry = ConfigEntry[OffdelayIntegrationData]
 
 @dataclass
 class OffdelayIntegrationData:
-    """Data for the Offdelay integration."""
+    """Data for the Offdelay."""
 
     client: IntegrationBlueprintApiClient
     coordinator: OffdelayDataUpdateCoordinator

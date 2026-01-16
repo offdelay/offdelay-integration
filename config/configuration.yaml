@@ -12,7 +12,7 @@ homeassistant:
 logger:
   default: info
   logs:
-    custom_components.offdelay_integration: debug
+    custom_components.offdelay: debug
   filters:
     homeassistant.components.go2rtc:
       - "Could not find go2rtc docker binary"

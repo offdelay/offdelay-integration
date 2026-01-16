@@ -39,7 +39,7 @@
                     "reportMissingTypeStubs": "none"
                 },
                 "python.analysis.include": [
-                    "custom_components/offdelay_integration"
+                    "custom_components/offdelay"
                 ],
                 "python.analysis.exclude": [
                     "**/.venv/**",

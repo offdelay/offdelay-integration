@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sensor platform for offdelay_integration."""
+"""Sensor platform for offdelay."""
 
 from __future__ import annotations
 
@@ -71,7 +71,7 @@ async def async_setup_entry(
 
 
 class OffdelayIntegrationSensor(OffdelayIntegrationEntity, SensorEntity):
-    """offdelay_integration Sensor class."""
+    """offdelay Sensor class."""
 
     @property
     def native_value(self) -> float | int | str | None:

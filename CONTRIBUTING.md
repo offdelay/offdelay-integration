@@ -49,8 +49,6 @@ Use [Ruff](https://github.com/astral-sh/ruff) for linting and formatting. Run `s
 
 ## Test your code modification
 
-This custom component is based on [offdelay_integration template](https://github.com/offdelay/offdelay_integration).
-
 It comes with development environment in a container, easy to launch
 if you use Visual Studio Code. With this container you will have a stand alone
 Home Assistant instance running and already configured with the included

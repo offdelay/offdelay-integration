@@ -1,5 +1,5 @@
 """
-Diagnostics support for Offdelay Integration.
+Diagnostics support for Offdelay.
 
 Learn more about diagnostics:
 https://developers.home-assistant.io/docs/core/integration_diagnostics

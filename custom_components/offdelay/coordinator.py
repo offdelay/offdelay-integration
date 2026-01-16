@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""DataUpdateCoordinator for offdelay_integration."""
+"""DataUpdateCoordinator for offdelay."""
 
 from __future__ import annotations
 
@@ -85,14 +85,14 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         except IntegrationBlueprintApiClientAuthenticationError as exception:
             LOGGER.warning("Authentication error - %s", exception)
             raise ConfigEntryAuthFailed(
-                translation_domain="offdelay_integration",
+                translation_domain="offdelay",
                 translation_key="authentication_failed",
             ) from exception
 
         except IntegrationBlueprintApiClientError as exception:
             LOGGER.exception("Error communicating with API")
             raise UpdateFailed(
-                translation_domain="offdelay_integration",
+                translation_domain="offdelay",
                 translation_key="update_failed",
             ) from exception
 

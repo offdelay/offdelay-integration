@@ -1,4 +1,4 @@
-# Offdelay Integration for Home Assistant
+# Offdelay for Home Assistant
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/custom-components/hacs)
 [![GitHub Release](https://img.shields.io/github/v/release/offdelay/offdelay-integration)](https://github.com/offdelay/offdelay-integration/releases)
@@ -26,18 +26,18 @@ Because this is not part of the default HACS repository, you must add it as a cu
 3.  Add the URL to this repository (`https://github.com/offdelay/offdelay-integration`) in the "Repository" field.
 4.  Select "Integration" as the category.
 5.  Click "ADD".
-6.  The "Offdelay Integration" will now show up. Click "INSTALL".
+6.  The "Offdelay" will now show up. Click "INSTALL".
 7.  Restart Home Assistant.
 
 ## Configuration
 
 After installation, the integration can be configured through the Home Assistant UI.
 
-[![Add Integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=offdelay_integration)
+[![Add Integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=offdelay)
 
 1.  Navigate to **Settings** &rarr; **Devices & Services**.
 2.  Click **+ Add Integration**.
-3.  Search for "Offdelay Integration" and select it.
+3.  Search for "Offdelay" and select it.
 4.  Follow the on-screen instructions to complete the setup.
 
 ## Entities Provided

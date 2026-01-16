@@ -1,6 +1,6 @@
 {
   "domain": "offdelay",
-  "name": "Offdelay Integration",
+  "name": "Offdelay",
   "codeowners": [
     "@offdelay"
   ],

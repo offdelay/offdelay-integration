@@ -1,4 +1,4 @@
-"""Binary sensor platform for offdelay_integration."""
+"""Binary sensor platform for offdelay."""
 
 from __future__ import annotations
 

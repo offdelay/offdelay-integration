@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Custom integration to integrate offdelay_integration with Home Assistant.
+Custom integration to integrate offdelay with Home Assistant.
 
 For more details about this integration, please refer to
 https://github.com/offdelay/offdelay_integration

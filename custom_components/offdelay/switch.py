@@ -1,4 +1,4 @@
-"""Switch platform for offdelay_integration."""
+"""Switch platform for offdelay."""
 
 from __future__ import annotations
 

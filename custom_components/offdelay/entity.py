@@ -1,4 +1,4 @@
-"""Base entity for Offdelay integration."""
+"""Base entity for Offdelay."""
 
 from __future__ import annotations
 

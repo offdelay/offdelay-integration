@@ -1,4 +1,4 @@
-"""Constants for offdelay_integration."""
+"""Constants for offdelay."""
 
 from logging import Logger, getLogger
 

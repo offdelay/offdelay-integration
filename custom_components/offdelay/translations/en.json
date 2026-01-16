@@ -61,7 +61,7 @@
             }
         },
         "binary_sensor": {
-            "offdelay_integration": {
+            "offdelay": {
                 "name": "Binary sensor"
             }
         },
