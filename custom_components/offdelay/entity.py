@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity import EntityDescription
 
 
-class OffdelayIntegrationEntity(CoordinatorEntity[OffdelayDataUpdateCoordinator]):
+class OffdelayEntity(CoordinatorEntity[OffdelayDataUpdateCoordinator]):
     """Base entity for all Offdelay entities."""
 
     _attr_attribution = ATTRIBUTION

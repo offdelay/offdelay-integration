@@ -17,12 +17,12 @@ from homeassistant.loader import async_get_loaded_integration
 
 from .api import IntegrationBlueprintApiClient
 from .coordinator import OffdelayDataUpdateCoordinator
-from .data import OffdelayIntegrationData
+from .data import OffdelayData
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-    from .data import OffdelayIntegrationConfigEntry
+    from .data import OffdelayConfigEntry
 
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,
@@ -34,7 +34,7 @@ PLATFORMS: list[Platform] = [
 # https://developers.home-assistant.io/docs/config_entries_index/#setting-up-an-entry
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: OffdelayIntegrationConfigEntry,
+    entry: OffdelayConfigEntry,
 ) -> bool:
     """Set up this integration using UI."""
     # Create coordinator (logger and name are positional)
@@ -44,7 +44,7 @@ async def async_setup_entry(
     coordinator.update_interval = timedelta(hours=1)
 
     # Initialize runtime data
-    entry.runtime_data = OffdelayIntegrationData(
+    entry.runtime_data = OffdelayData(
         client=IntegrationBlueprintApiClient(
             username=entry.data[CONF_USERNAME],
             password=entry.data[CONF_PASSWORD],
@@ -66,7 +66,7 @@ async def async_setup_entry(
 
 async def async_unload_entry(
     hass: HomeAssistant,
-    entry: OffdelayIntegrationConfigEntry,
+    entry: OffdelayConfigEntry,
 ) -> bool:
     """Handle removal of an entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
@@ -74,7 +74,7 @@ async def async_unload_entry(
 
 async def async_reload_entry(
     hass: HomeAssistant,
-    entry: OffdelayIntegrationConfigEntry,
+    entry: OffdelayConfigEntry,
 ) -> None:
     """Reload config entry."""
     await hass.config_entries.async_reload(entry.entry_id)

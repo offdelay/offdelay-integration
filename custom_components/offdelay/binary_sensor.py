@@ -13,9 +13,9 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-    from .data import OffdelayIntegrationConfigEntry
+    from .data import OffdelayConfigEntry
 
-from .entity import OffdelayIntegrationEntity
+from .entity import OffdelayEntity
 
 ENTITY_DESCRIPTIONS = (
     BinarySensorEntityDescription(
@@ -28,12 +28,12 @@ ENTITY_DESCRIPTIONS = (
 
 async def async_setup_entry(
     hass: HomeAssistant,  # noqa: ARG001
-    entry: OffdelayIntegrationConfigEntry,
+    entry: OffdelayConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up binary sensors for this integration."""
     async_add_entities(
-        OffdelayIntegrationBinarySensor(
+        OffdelayBinarySensor(
             coordinator=entry.runtime_data.coordinator,
             entity_description=description,
         )
@@ -41,7 +41,7 @@ async def async_setup_entry(
     )
 
 
-class OffdelayIntegrationBinarySensor(OffdelayIntegrationEntity, BinarySensorEntity):
+class OffdelayBinarySensor(OffdelayEntity, BinarySensorEntity):
     """Binary sensor representing home status or other flag."""
 
     @property

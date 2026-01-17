@@ -12,12 +12,12 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-    from .data import OffdelayIntegrationConfigEntry
+    from .data import OffdelayConfigEntry
 
 
 async def async_get_config_entry_diagnostics(
     hass: HomeAssistant,  # noqa: ARG001
-    entry: OffdelayIntegrationConfigEntry,
+    entry: OffdelayConfigEntry,
 ) -> dict[str, Any]:
     """Return diagnostics for a config entry."""
     coordinator = entry.runtime_data.coordinator

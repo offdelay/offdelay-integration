@@ -13,11 +13,11 @@ if TYPE_CHECKING:
     from .coordinator import OffdelayDataUpdateCoordinator
 
 
-type OffdelayIntegrationConfigEntry = ConfigEntry[OffdelayIntegrationData]
+type OffdelayConfigEntry = ConfigEntry[OffdelayData]
 
 
 @dataclass
-class OffdelayIntegrationData:
+class OffdelayData:
     """Data for the Offdelay."""
 
     client: IntegrationBlueprintApiClient

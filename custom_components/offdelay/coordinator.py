@@ -22,17 +22,15 @@ from .const import LOGGER
 if TYPE_CHECKING:
     from homeassistant.core import Event, HomeAssistant
 
-    from .data import OffdelayIntegrationConfigEntry
+    from .data import OffdelayConfigEntry
 
 
 class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Coordinator to manage fetching API data, weather, and home status."""
 
-    config_entry: OffdelayIntegrationConfigEntry
+    config_entry: OffdelayConfigEntry
 
-    def __init__(
-        self, hass: HomeAssistant, config_entry: OffdelayIntegrationConfigEntry
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, config_entry: OffdelayConfigEntry) -> None:
         """Initialize coordinator."""
         super().__init__(
             hass, LOGGER, name="Offdelay Coordinator", update_interval=None

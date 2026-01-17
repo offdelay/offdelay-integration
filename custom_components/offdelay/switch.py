@@ -9,13 +9,13 @@ from homeassistant.components.switch import (
     SwitchEntityDescription,
 )
 
-from .entity import OffdelayIntegrationEntity
+from .entity import OffdelayEntity
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-    from .data import OffdelayIntegrationConfigEntry
+    from .data import OffdelayConfigEntry
 
 
 ENTITY_DESCRIPTIONS = (
@@ -34,12 +34,12 @@ ENTITY_DESCRIPTIONS = (
 
 async def async_setup_entry(
     hass: HomeAssistant,  # noqa: ARG001
-    entry: OffdelayIntegrationConfigEntry,
+    entry: OffdelayConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the switch platform."""
     async_add_entities(
-        OffdelayIntegrationModeSwitch(
+        OffdelayModeSwitch(
             coordinator=entry.runtime_data.coordinator,
             entity_description=description,
         )
@@ -47,7 +47,7 @@ async def async_setup_entry(
     )
 
 
-class OffdelayIntegrationModeSwitch(OffdelayIntegrationEntity, SwitchEntity):
+class OffdelayModeSwitch(OffdelayEntity, SwitchEntity):
     """Offdelay mode switch."""
 
     @property

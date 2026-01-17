@@ -12,13 +12,13 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import UnitOfTemperature
 
-from .entity import OffdelayIntegrationEntity
+from .entity import OffdelayEntity
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-    from .data import OffdelayIntegrationConfigEntry
+    from .data import OffdelayConfigEntry
 
 ENTITY_DESCRIPTIONS = (
     SensorEntityDescription(
@@ -57,12 +57,12 @@ ENTITY_DESCRIPTIONS = (
 
 async def async_setup_entry(
     hass: HomeAssistant,  # noqa: ARG001 Unused function argument: `hass`
-    entry: OffdelayIntegrationConfigEntry,
+    entry: OffdelayConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
     async_add_entities(
-        OffdelayIntegrationSensor(
+        OffdelaySensor(
             coordinator=entry.runtime_data.coordinator,
             entity_description=entity_description,
         )
@@ -70,7 +70,7 @@ async def async_setup_entry(
     )
 
 
-class OffdelayIntegrationSensor(OffdelayIntegrationEntity, SensorEntity):
+class OffdelaySensor(OffdelayEntity, SensorEntity):
     """offdelay Sensor class."""
 
     @property
