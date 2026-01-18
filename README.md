@@ -72,3 +72,28 @@ This integration creates the following entities:
 
 - **`switch.home_vacation`**: An input switch to manually control vacation mode.
   - **Action**: Turning this switch `on` will force the `sensor.home_status` to `Vacation`.
+
+## Blueprints
+
+This integration comes with pre-made blueprints to help you get started with automations and scripts. Once the integration is installed, these blueprints will be available in your Home Assistant instance.
+
+### How to Find the Blueprints
+
+1.  Navigate to **Settings** &rarr; **Automations & Scenes**.
+2.  Select the **Blueprints** tab.
+3.  You will find the blueprints provided by this integration listed here.
+
+You can then use these blueprints to create new automations or scripts without needing to write any YAML code.
+
+## Troubleshooting
+
+If you encounter any issues with this integration, here are a few common troubleshooting steps:
+
+1.  **Check the Logs**: Go to **Settings** &rarr; **System** &rarr; **Logs** to see if there are any error messages related to the "Offdelay" integration.
+2.  **Restart Home Assistant**: Sometimes, a simple restart can resolve issues.
+3.  **Re-add the Integration**: If the problems persist, you can try removing the integration and adding it again.
+4.  **Create an Issue**: If you're still having trouble, please [create an issue](https://github.com/offdelay/offdelay-integration/issues) on our GitHub repository. Be sure to include any relevant logs and a detailed description of the problem.
+
+## Contributing
+
+Contributions are welcome! If you'd like to contribute to this project, please see our [contributing guidelines](CONTRIBUTING.md).
