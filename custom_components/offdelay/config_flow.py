@@ -1,11 +1,11 @@
 """Adds config flow for Blueprint."""
 
-import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from slugify import slugify
+import voluptuous as vol
 
 from .api import (
     IntegrationBlueprintApiClient,
@@ -31,12 +31,15 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self,
         user_input: dict | None = None,
     ) -> config_entries.ConfigFlowResult:
-        """
-        Handle a flow initialized by the user.
+        """Handle a flow initialized by the user.
 
         https://developers.home-assistant.io/docs/config_entries_config_flow_handler/#defining-steps
+
+        Returns:
+            config_entries.ConfigFlowResult: The result of the config flow.
+
         """
-        _errors = {}
+        errors = {}
         if user_input is not None:
             try:
                 await self._test_credentials(
@@ -48,12 +51,12 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 IntegrationBlueprintApiClientCommunicationError,
                 IntegrationBlueprintApiClientError,
             ) as exception:
-                _errors["base"] = self._handle_client_error(exception)
+                errors["base"] = self._handle_client_error(exception)
             else:
                 await self.async_set_unique_id(
-                    ## Do NOT use this in production code
-                    ## The unique_id should never be something that can change
-                    ## https://developers.home-assistant.io/docs/config_entries_config_flow_handler#unique-ids
+                    # Do NOT use this in production code
+                    # The unique_id should never be something that can change
+                    # https://developers.home-assistant.io/docs/config_entries_config_flow_handler#unique-ids
                     unique_id=slugify(user_input[CONF_USERNAME])
                 )
                 self._abort_if_unique_id_configured()
@@ -81,17 +84,22 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ),
                 },
             ),
-            errors=_errors,
+            errors=errors,
         )
 
     async def async_step_reconfigure(
         self,
         user_input: dict | None = None,
     ) -> config_entries.ConfigFlowResult:
-        """Handle reconfiguration of the integration."""
+        """Handle a reconfiguration of the integration.
+
+        Returns:
+            config_entries.ConfigFlowResult: The result of the config flow.
+
+        """
         entry = self._get_reconfigure_entry()
 
-        _errors = {}
+        errors = {}
         if user_input is not None:
             try:
                 await self._test_credentials(
@@ -103,7 +111,7 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 IntegrationBlueprintApiClientCommunicationError,
                 IntegrationBlueprintApiClientError,
             ) as exception:
-                _errors["base"] = self._handle_client_error(exception)
+                errors["base"] = self._handle_client_error(exception)
             else:
                 return self.async_update_reload_and_abort(
                     entry,
@@ -131,7 +139,7 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ),
                 },
             ),
-            errors=_errors,
+            errors=errors,
         )
 
     async def _test_credentials(self, username: str, password: str) -> None:
@@ -143,13 +151,15 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
         await client.async_get_data()
 
-    def _handle_client_error(
-        self, exception: IntegrationBlueprintApiClientError
-    ) -> str:
-        """
-        Handle API client errors and return appropriate error key.
+    @staticmethod
+    def _handle_client_error(exception: IntegrationBlueprintApiClientError) -> str:
+        """Handle API client errors and return appropriate error key.
 
         Maps exception types to user-facing error messages defined in translations.
+
+        Returns:
+            str: The error key.
+
         """
         LOGGER.warning(exception)
         return ERROR_MAP.get(type(exception), "unknown")

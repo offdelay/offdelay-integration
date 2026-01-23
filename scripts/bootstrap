@@ -37,7 +37,7 @@ if [ -f "$HOME/.zshrc" ]; then
 fi
 
 echo "==> Installing dependencies..."
-uv pip install --requirement requirements.txt
+uv pip install --requirement requirements.test.txt
 
 HA_VERSION="${HA_VERSION:-$(grep '"homeassistant"' hacs.json | head -1 | sed 's/.*"homeassistant"\s*:\s*"\([^"]*\)".*/\1/')}"
 

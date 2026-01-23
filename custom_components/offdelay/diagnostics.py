@@ -1,5 +1,4 @@
-"""
-Diagnostics support for Offdelay.
+"""Diagnostics support for Offdelay.
 
 Learn more about diagnostics:
 https://developers.home-assistant.io/docs/core/integration_diagnostics
@@ -15,7 +14,7 @@ if TYPE_CHECKING:
     from .data import OffdelayConfigEntry
 
 
-async def async_get_config_entry_diagnostics(
+def async_get_config_entry_diagnostics(
     hass: HomeAssistant,  # noqa: ARG001
     entry: OffdelayConfigEntry,
 ) -> dict[str, Any]:

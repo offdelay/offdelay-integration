@@ -1,28 +1,32 @@
-#!/usr/bin/env python3
 """DataUpdateCoordinator for offdelay."""
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.const import STATE_ON
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, STATE_ON
+from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.event import (
     EventStateChangedData,
     async_track_state_change_event,
 )
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.loader import async_get_loaded_integration
 
 from .api import (
+    IntegrationBlueprintApiClient,
     IntegrationBlueprintApiClientAuthenticationError,
     IntegrationBlueprintApiClientError,
 )
-from .const import LOGGER
+from .blueprint import async_setup_blueprints, async_unload_blueprints
+from .const import DOMAIN, LOGGER, PLATFORMS
+from .data import OffdelayConfigEntry, OffdelayData
 
 if TYPE_CHECKING:
-    from homeassistant.core import Event, HomeAssistant
-
-    from .data import OffdelayConfigEntry
+    from homeassistant.core import Event
 
 
 class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -38,14 +42,12 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         self.config_entry = config_entry
 
-        # Stored state
-        self.data = {
+        self.data: dict[str, Any] = {
             "home_status": "Home",
             "vacation_mode": False,
             "guest_mode": False,
         }
 
-        # For detecting "coming back from holiday"
         self._prev_home = 0.0
         self._prev_near = 0.0
 
@@ -58,25 +60,35 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_zone_or_vacation_changed(
         self, _event: Event[EventStateChangedData]
     ) -> None:
+        """React to zone/vacation state changes."""
         home = self._update_home_data()
         self.async_set_updated_data({**self.data, **home})
 
     async def _async_update_data(self) -> dict[str, Any]:
+        """Fetch all coordinator data."""
         data: dict[str, Any] = {}
 
         api = await self._update_api_data()
-        data.update(api)
-
         weather = await self._update_weather_data()
-        data.update(weather)
-
         home = self._update_home_data()
-        data.update(home)
+
+        for source in (api, weather, home):
+            if source:
+                data.update(source)
 
         return data
 
     async def _update_api_data(self) -> dict[str, Any]:
-        """Fetch fresh data from the backend API."""
+        """Fetch fresh data from the backend API.
+
+        Returns:
+            dict[str, Any]: The data from the API.
+
+        Raises:
+            ConfigEntryAuthFailed: If authentication fails.
+            UpdateFailed: If the update fails.
+
+        """
         try:
             return await self.config_entry.runtime_data.client.async_get_data()
 
@@ -95,96 +107,94 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             ) from exception
 
     async def _update_weather_data(self) -> dict[str, Any]:
-        """Get weather forecast data and compute values."""
-        # Determine which weather entity to use
+        """Get weather forecast data and compute values.
+
+        Returns:
+            dict[str, Any]: The weather data.
+
+        Raises:
+            UpdateFailed: If fetching weather data fails.
+
+        """
+        # Determine weather entity
+        weather_entity: str | None = None
         if self.hass.states.get("weather.forecast_home"):
             weather_entity = "weather.forecast_home"
         elif self.hass.states.get("weather.home"):
             weather_entity = "weather.home"
-        else:
-            msg = "No weather entity found (weather.home or weather.forecast_home)"
-            raise UpdateFailed(msg)
 
-        try:
-            # --- Hourly forecast ---
-            hourly_response = await self.hass.services.async_call(
-                "weather",
-                "get_forecasts",
-                {"entity_id": weather_entity, "type": "hourly"},
-                blocking=True,
-                return_response=True,
-            )
+        if weather_entity is None:
+            raise UpdateFailed("No weather entity found")
 
-            hourly_data: dict[str, Any] = {}
-            if isinstance(hourly_response, dict):
-                entity_data = hourly_response.get(weather_entity)
-                if isinstance(entity_data, dict):
-                    hourly_data = entity_data
+        # Fetch hourly forecast
+        hourly_response: dict[str, Any] | None = await self.hass.services.async_call(
+            "weather",
+            "get_forecasts",
+            {"entity_id": weather_entity, "type": "hourly"},
+            blocking=True,
+            return_response=True,
+        )
 
-            hourly_forecast = []
-            if "forecast" in hourly_data and isinstance(hourly_data["forecast"], list):
-                hourly_forecast = [
-                    f for f in hourly_data["forecast"] if isinstance(f, dict)
-                ]
+        hourly_data: dict[str, Any] = (
+            hourly_response.get(weather_entity, {}) if hourly_response else {}
+        )
+        hourly_forecast: list[dict[str, Any]] = hourly_data.get("forecast", [])
 
-            # Extract temperatures safely
-            temperatures: list[float] = [
-                t["temperature"]
-                for t in hourly_forecast
-                if "temperature" in t and isinstance(t["temperature"], (int, float))
-            ]
-            max_temp = max(temperatures) if temperatures else 17.0
+        temperatures: list[float] = [
+            t["temperature"]
+            for t in hourly_forecast
+            if isinstance(t.get("temperature"), (int, float))
+        ]
+        max_temp: float = max(temperatures) if temperatures else 17.0
 
-            # --- Daily forecast ---
-            daily_response = await self.hass.services.async_call(
-                "weather",
-                "get_forecasts",
-                {"entity_id": weather_entity, "type": "daily"},
-                blocking=True,
-                return_response=True,
-            )
+        # Fetch daily forecast
+        daily_response: dict[str, Any] | None = await self.hass.services.async_call(
+            "weather",
+            "get_forecasts",
+            {"entity_id": weather_entity, "type": "daily"},
+            blocking=True,
+            return_response=True,
+        )
 
-            daily_data: dict[str, Any] = {}
-            if isinstance(daily_response, dict):
-                entity_data = daily_response.get(weather_entity)
-                if isinstance(entity_data, dict):
-                    daily_data = entity_data
+        daily_data: dict[str, Any] = (
+            daily_response.get(weather_entity, {}) if daily_response else {}
+        )
+        daily_forecast: list[dict[str, Any]] = daily_data.get("forecast", [])
 
-            daily_forecast: list[dict[str, Any]] = []
-            if "forecast" in daily_data and isinstance(daily_data["forecast"], list):
-                daily_forecast = [
-                    f for f in daily_data["forecast"] if isinstance(f, dict)
-                ]
+        # Rank map for conditions
+        rank_map: dict[str, int] = {
+            "sunny": 4,
+            "partlycloudy": 3,
+            "cloudy": 2,
+            "rainy": 1,
+        }
 
-            # Map weather conditions to rank
-            rank_map = {"sunny": 4, "partlycloudy": 3, "cloudy": 2, "rainy": 1}
+        # Get today's and tomorrow's conditions
+        today_condition: str | None = (
+            daily_forecast[0].get("condition") if len(daily_forecast) > 0 else None
+        )
+        tomorrow_condition: str | None = (
+            daily_forecast[1].get("condition") if len(daily_forecast) > 1 else None
+        )
 
-            today_condition = (
-                daily_forecast[0].get("condition") if len(daily_forecast) > 0 else None
-            )
-            tomorrow_condition = (
-                daily_forecast[1].get("condition") if len(daily_forecast) > 1 else None
-            )
-
-            today_rank = rank_map.get(today_condition, 0) if today_condition else 0
-            tomorrow_rank = (
-                rank_map.get(tomorrow_condition, 0) if tomorrow_condition else 0
-            )
-
-        except Exception as err:
-            msg = f"Error fetching weather data: {err}"
-            raise UpdateFailed(msg) from err
+        today_rank: int = rank_map.get(today_condition or "", 0)
+        tomorrow_rank: int = rank_map.get(tomorrow_condition or "", 0)
 
         return {
-            "weather_max_temp_today": max_temp,
-            "weather_condition_rank_today": today_rank,
-            "weather_condition_rank_tomorrow": tomorrow_rank,
-            "weather_condition_today": today_condition,
-            "weather_condition_tomorrow": tomorrow_condition,
+            "max_temp": max_temp,
+            "today_condition": today_condition,
+            "tomorrow_condition": tomorrow_condition,
+            "today_rank": today_rank,
+            "tomorrow_rank": tomorrow_rank,
         }
 
     def _update_home_data(self) -> dict[str, Any]:
-        """Compute home_status and vacation flag."""
+        """Compute home status and flags.
+
+        Returns:
+            dict[str, Any]: Home-related state data.
+
+        """
 
         def num(entity_id: str) -> float:
             state = self.hass.states.get(entity_id)
@@ -197,20 +207,17 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         near = num("zone.near_home")
 
         vacation_entity = self.hass.states.get("switch.offdelay_vacation_mode")
-        vacation = self.data.get("vacation_mode")
+        vacation = self.data.get("vacation_mode", False)
 
-        # Auto-clear vacation if coming back from 0 → >0
-        if (
-            vacation_entity is not None
-            and vacation_entity.state == STATE_ON
-            and self._prev_home == 0.0
-            and self._prev_near == 0.0
-            and (home > 0 or near > 0)
-        ):
+        is_vacation_on = vacation_entity and vacation_entity.state == STATE_ON
+        is_coming_back = (
+            self._prev_home == 0.0 and self._prev_near == 0.0 and (home > 0 or near > 0)
+        )
+
+        if is_vacation_on and is_coming_back:
             LOGGER.info("People returned from vacation — clearing vacation mode")
             vacation = False
 
-        # Compute status
         if vacation:
             status = "Vacation"
         elif home > 0:
@@ -220,7 +227,6 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         else:
             status = "Away"
 
-        # Save previous values for next run
         self._prev_home = home
         self._prev_near = near
 
@@ -230,9 +236,52 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "guest_mode": self.data.get("guest_mode", False),
         }
 
-    async def async_set_home_data(self, key: str, value: Any) -> None:
+    async def async_set_home_data(self, key: str, *, value: bool) -> None:
         """Set a key-value pair in the coordinator's data."""
         self.data[key] = value
-        home = self._update_home_data()
-        self.data.update(home)
+        self.data.update(self._update_home_data())
         self.async_set_updated_data(self.data)
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: OffdelayConfigEntry) -> bool:
+    """Set up this integration using UI.
+
+    Returns:
+        bool: True if setup was successful.
+
+    """
+    coordinator = OffdelayDataUpdateCoordinator(hass, entry)
+    coordinator.update_interval = timedelta(hours=1)
+
+    entry.runtime_data = OffdelayData(
+        client=IntegrationBlueprintApiClient(
+            username=entry.data[CONF_USERNAME],
+            password=entry.data[CONF_PASSWORD],
+            session=async_get_clientsession(hass),
+        ),
+        integration=async_get_loaded_integration(hass, entry.domain),
+        coordinator=coordinator,
+    )
+
+    await coordinator.async_config_entry_first_refresh()
+    await async_setup_blueprints(hass, DOMAIN)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: OffdelayConfigEntry) -> bool:
+    """Handle removal of an entry.
+
+    Returns:
+        bool: True if unload was successful.
+
+    """
+    await async_unload_blueprints(hass, DOMAIN)
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
+
+async def async_reload_entry(hass: HomeAssistant, entry: OffdelayConfigEntry) -> None:
+    """Reload config entry."""
+    await hass.config_entries.async_reload(entry.entry_id)

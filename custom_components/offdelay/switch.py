@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from homeassistant.components.switch import (
-    SwitchEntity,
-    SwitchEntityDescription,
-)
+from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 
 from .entity import OffdelayEntity
 
@@ -32,7 +29,7 @@ ENTITY_DESCRIPTIONS = (
 )
 
 
-async def async_setup_entry(
+async def async_setup_entry(  # noqa: RUF029
     hass: HomeAssistant,  # noqa: ARG001
     entry: OffdelayConfigEntry,
     async_add_entities: AddEntitiesCallback,
@@ -55,13 +52,13 @@ class OffdelayModeSwitch(OffdelayEntity, SwitchEntity):
         """Return true if the switch is on."""
         return bool(self.coordinator.data.get(self.entity_description.key))
 
-    async def async_turn_on(self, **kwargs: Any) -> None:  # noqa: ARG002
+    async def async_turn_on(self, **kwargs: object) -> None:  # noqa: ARG002
         """Turn the switch on."""
         await self.coordinator.async_set_home_data(
             self.entity_description.key, value=True
         )
 
-    async def async_turn_off(self, **kwargs: Any) -> None:  # noqa: ARG002
+    async def async_turn_off(self, **kwargs: object) -> None:  # noqa: ARG002
         """Turn the switch off."""
         await self.coordinator.async_set_home_data(
             self.entity_description.key, value=False

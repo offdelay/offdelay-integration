@@ -1,28 +1,23 @@
-#!/usr/bin/env python3
-"""
-Custom integration to integrate offdelay with Home Assistant.
+"""Custom integration to integrate offdelay with Home Assistant.
 
 For more details about this integration, please refer to
 https://github.com/offdelay/offdelay_integration
 """
 
+from __future__ import annotations
+
 from datetime import timedelta
 
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import IntegrationBlueprintApiClient
 from .blueprint import async_setup_blueprints, async_unload_blueprints
+from .const import DOMAIN, PLATFORMS
 from .coordinator import OffdelayDataUpdateCoordinator
 from .data import OffdelayConfigEntry, OffdelayData
-
-PLATFORMS: list[Platform] = [
-    Platform.SENSOR,
-    Platform.BINARY_SENSOR,
-    Platform.SWITCH,
-]
 
 
 # https://developers.home-assistant.io/docs/config_entries_index/#setting-up-an-entry
@@ -30,8 +25,12 @@ async def async_setup_entry(
     hass: HomeAssistant,
     entry: OffdelayConfigEntry,
 ) -> bool:
-    """Set up this integration using UI."""
-    # Create coordinator (logger and name are positional)
+    """Set up this integration using the UI.
+
+    Returns:
+        bool: True if setup was successful, False otherwise.
+
+    """
     coordinator = OffdelayDataUpdateCoordinator(hass, entry)
 
     # Optionally set periodic update interval
@@ -52,7 +51,7 @@ async def async_setup_entry(
     await coordinator.async_config_entry_first_refresh()
 
     # Set up blueprints
-    await async_setup_blueprints(hass)
+    await async_setup_blueprints(hass, DOMAIN)
 
     # Set up platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -66,7 +65,7 @@ async def async_unload_entry(
     entry: OffdelayConfigEntry,
 ) -> bool:
     """Handle removal of an entry."""
-    await async_unload_blueprints(hass)
+    await async_unload_blueprints(hass, DOMAIN)
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
