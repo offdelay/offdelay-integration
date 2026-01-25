@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Sensor platform for offdelay."""
 
 from __future__ import annotations
@@ -55,7 +54,7 @@ ENTITY_DESCRIPTIONS = (
 )
 
 
-async def async_setup_entry(
+async def async_setup_entry(  # noqa: RUF029
     hass: HomeAssistant,  # noqa: ARG001 Unused function argument: `hass`
     entry: OffdelayConfigEntry,
     async_add_entities: AddEntitiesCallback,

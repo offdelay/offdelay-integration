@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import ATTRIBUTION
+from .const import ATTRIBUTION, DOMAIN
 from .coordinator import OffdelayDataUpdateCoordinator
 
 if TYPE_CHECKING:
@@ -34,12 +34,7 @@ class OffdelayEntity(CoordinatorEntity[OffdelayDataUpdateCoordinator]):
         )
         self._attr_device_info = DeviceInfo(
             name="Offdelay",
-            identifiers={
-                (
-                    coordinator.config_entry.domain,
-                    coordinator.config_entry.entry_id,
-                ),
-            },
+            identifiers={(DOMAIN, coordinator.config_entry.entry_id)},
             manufacturer="Offdelay",
             model="Logic Engine",
             entry_type=DeviceEntryType.SERVICE,

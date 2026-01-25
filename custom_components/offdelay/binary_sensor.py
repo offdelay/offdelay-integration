@@ -26,7 +26,7 @@ ENTITY_DESCRIPTIONS = (
 )
 
 
-async def async_setup_entry(
+async def async_setup_entry(  # noqa: RUF029
     hass: HomeAssistant,  # noqa: ARG001
     entry: OffdelayConfigEntry,
     async_add_entities: AddEntitiesCallback,

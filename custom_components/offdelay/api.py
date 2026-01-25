@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import socket
-from typing import Any
 
 import aiohttp
 
@@ -26,8 +25,13 @@ class IntegrationBlueprintApiClientAuthenticationError(
 
 
 def _verify_response_or_raise(response: aiohttp.ClientResponse) -> None:
-    """Verify that the response is valid."""
-    if response.status in (401, 403):
+    """Verify that the response is valid.
+
+    Raises:
+        IntegrationBlueprintApiClientAuthenticationError: If the response indicates an authentication error.
+
+    """
+    if response.status in {401, 403}:
         msg = "Invalid credentials"
         raise IntegrationBlueprintApiClientAuthenticationError(
             msg,
@@ -49,15 +53,25 @@ class IntegrationBlueprintApiClient:
         self._password = password
         self._session = session
 
-    async def async_get_data(self) -> Any:
-        """Get data from the API."""
+    async def async_get_data(self) -> dict:
+        """Get data from the API.
+
+        Returns:
+            dict: The data from the API.
+
+        """
         return await self._api_wrapper(
             method="get",
             url="https://jsonplaceholder.typicode.com/posts/1",
         )
 
-    async def async_set_title(self, value: str) -> Any:
-        """Get data from the API."""
+    async def async_set_title(self, value: str) -> dict:
+        """Get data from the API.
+
+        Returns:
+            dict: The data from the API.
+
+        """
         return await self._api_wrapper(
             method="patch",
             url="https://jsonplaceholder.typicode.com/posts/1",
@@ -71,8 +85,17 @@ class IntegrationBlueprintApiClient:
         url: str,
         data: dict | None = None,
         headers: dict | None = None,
-    ) -> Any:
-        """Get information from the API."""
+    ) -> dict:
+        """Get information from the API.
+
+        Returns:
+            dict: The data from the API.
+
+        Raises:
+            IntegrationBlueprintApiClientCommunicationError: If a communication error occurs.
+            IntegrationBlueprintApiClientError: If a general API error occurs.
+
+        """
         try:
             async with asyncio.timeout(10):
                 response = await self._session.request(

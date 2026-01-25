@@ -85,6 +85,20 @@ This integration comes with pre-made blueprints to help you get started with aut
 
 You can then use these blueprints to create new automations or scripts without needing to write any YAML code.
 
+## Testing
+
+This project uses `pytest` for testing. To run the tests, you first need to install the testing dependencies:
+
+```bash
+pip install -r requirements_test.txt
+```
+
+Once the dependencies are installed, you can run the tests with the following command:
+
+```bash
+pytest
+```
+
 ## Troubleshooting
 
 If you encounter any issues with this integration, here are a few common troubleshooting steps:
@@ -97,3 +111,6 @@ If you encounter any issues with this integration, here are a few common trouble
 ## Contributing
 
 Contributions are welcome! If you'd like to contribute to this project, please see our [contributing guidelines](CONTRIBUTING.md).
+
+## License
+This project is licensed under the [Apache 2.0 License](LICENSE.md).
