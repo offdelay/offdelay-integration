@@ -2,7 +2,7 @@
     "config": {
         "step": {
             "user": {
-                "description": "If you need help with the configuration have a look here: https://github.com/offdelay/offdelay_integration",
+                "description": "If you need help with the configuration, see the documentation at {docs_url}.",
                 "data": {
                     "username": "Username",
                     "password": "Password"
