@@ -3,7 +3,7 @@ pip>=21.3.1
 pre-commit==4.5.1
 ruff==0.14.11
 debugpy>=1.8.17
-pycares==4.11.0
+pycares==5.0.1
 pytest==8.3.5
 pytest-cov==6.0.0
 pytest-asyncio==0.26.0
