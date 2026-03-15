@@ -58,19 +58,19 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          chmod +x ./scripts/unfreeze
+          chmod +x ./scripts/freeze
           python -m pip install --upgrade pip
 
-          if [[ "${{ matrix.dependencies }}" == "upgraded" ]];
-          then
+          if [[ "${{ matrix.dependencies }}" == "upgraded" ]]; then
             echo "unpinning dependencies"
-            ./script/unfreeze
+            ./scripts/unfreeze
           fi
 
           pip install -r requirements.test.txt
 
-          if [[ "${{ matrix.dependencies }}" == "upgraded" ]];
-          then
-            ./script/freeze
+          if [[ "${{ matrix.dependencies }}" == "upgraded" ]]; then
+            ./scripts/freeze
             echo "dependency changes after upgrade:"
             git diff requirements.test.txt
           fi
