@@ -1,0 +1,29 @@
+blueprint:
+  name: Generic Turn Off After Delay (Script)
+  description: >
+    Turns off any entity after a configurable delay. Works with switches,
+    lights, input_booleans, and other domains supporting turn_off.
+  domain: script
+  input:
+    target_entity:
+      name: Target Entity
+      selector:
+        target: {}
+    delay_time:
+      name: Delay
+      description: Time before turning off
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+          mode: box
+sequence:
+  - variables:
+      delay_seconds: !input delay_time
+  - delay:
+      seconds: "{{ delay_seconds }}"
+  - service: homeassistant.turn_off
+    target: !input target_entity
+mode: restart
