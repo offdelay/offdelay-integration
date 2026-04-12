@@ -13,7 +13,7 @@ from .api import (
     IntegrationBlueprintApiClientCommunicationError,
     IntegrationBlueprintApiClientError,
 )
-from .const import DOMAIN, LOGGER
+from .const import CONF_PERSONS, DOMAIN, LOGGER
 
 # Map exception types to error keys for user-facing messages
 ERROR_MAP = {
@@ -85,6 +85,15 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             type=selector.TextSelectorType.PASSWORD,
                         ),
                     ),
+                    vol.Optional(
+                        CONF_PERSONS,
+                        default=(user_input or {}).get(CONF_PERSONS, []),
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain="person",
+                            multiple=True,
+                        ),
+                    ),
                 },
             ),
             errors=errors,
@@ -138,6 +147,15 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ): selector.TextSelector(
                         selector.TextSelectorConfig(
                             type=selector.TextSelectorType.PASSWORD,
+                        ),
+                    ),
+                    vol.Optional(
+                        CONF_PERSONS,
+                        default=entry.data.get(CONF_PERSONS, []),
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain="person",
+                            multiple=True,
                         ),
                     ),
                 },
