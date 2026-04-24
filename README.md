@@ -87,13 +87,7 @@ You can then use these blueprints to create new automations or scripts without n
 
 ## Testing
 
-This project uses `pytest` for testing. To run the tests, you first need to install the testing dependencies:
-
-```bash
-pip install -r requirements_test.txt
-```
-
-Once the dependencies are installed, you can run the tests with the following command:
+This project uses `pytest` for testing. You can run the tests with the following command:
 
 ```bash
 pytest
