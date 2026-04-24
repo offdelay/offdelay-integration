@@ -1,16 +1,26 @@
 """Constants for the Off-delay integration tests."""
 
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-
-from custom_components.offdelay.const import CONF_PERSONS
+from custom_components.offdelay.const import (
+    CONF_CLIMATE_DAY_START_HOUR,
+    CONF_CLIMATE_DELTA_TOLERANCE,
+    CONF_CLIMATE_NIGHT_START_HOUR,
+    CONF_CLIMATES,
+    CONF_SUMMER_MIN_TEMP,
+    CONF_WINTER_MAX_TEMP,
+)
 
 MOCK_CONFIG = {
-    CONF_USERNAME: "test_username",
-    CONF_PASSWORD: "test_password",
+    CONF_WINTER_MAX_TEMP: 15.0,
+    CONF_SUMMER_MIN_TEMP: 20.0,
+    CONF_CLIMATE_DAY_START_HOUR: 8,
+    CONF_CLIMATE_NIGHT_START_HOUR: 17,
 }
 
-MOCK_CONFIG_WITH_PERSONS = {
-    CONF_USERNAME: "test_username",
-    CONF_PASSWORD: "test_password",
-    CONF_PERSONS: ["person.john", "person.jane"],
+MOCK_CONFIG_WITH_CLIMATE = {
+    CONF_WINTER_MAX_TEMP: 15.0,
+    CONF_SUMMER_MIN_TEMP: 20.0,
+    CONF_CLIMATES: ["climate.living_room", "climate.bedroom"],
+    CONF_CLIMATE_DELTA_TOLERANCE: 0.5,
+    CONF_CLIMATE_DAY_START_HOUR: 8,
+    CONF_CLIMATE_NIGHT_START_HOUR: 17,
 }

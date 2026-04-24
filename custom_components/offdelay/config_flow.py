@@ -1,25 +1,19 @@
 """Adds config flow for Blueprint."""
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import UnitOfTemperature
 from homeassistant.helpers import selector
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from slugify import slugify
 import voluptuous as vol
 
-from .api import (
-    IntegrationBlueprintApiClient,
-    IntegrationBlueprintApiClientAuthenticationError,
-    IntegrationBlueprintApiClientCommunicationError,
-    IntegrationBlueprintApiClientError,
+from .const import (
+    CONF_CLIMATE_DAY_START_HOUR,
+    CONF_CLIMATE_DELTA_TOLERANCE,
+    CONF_CLIMATE_NIGHT_START_HOUR,
+    CONF_CLIMATES,
+    CONF_SUMMER_MIN_TEMP,
+    CONF_WINTER_MAX_TEMP,
+    DOMAIN,
 )
-from .const import CONF_PERSONS, DOMAIN, LOGGER
-
-# Map exception types to error keys for user-facing messages
-ERROR_MAP = {
-    IntegrationBlueprintApiClientAuthenticationError: "auth",
-    IntegrationBlueprintApiClientCommunicationError: "connection",
-}
 
 
 class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -41,27 +35,22 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """
         errors = {}
         if user_input is not None:
-            try:
-                await self._test_credentials(
-                    username=user_input[CONF_USERNAME],
-                    password=user_input[CONF_PASSWORD],
-                )
-            except (
-                IntegrationBlueprintApiClientAuthenticationError,
-                IntegrationBlueprintApiClientCommunicationError,
-                IntegrationBlueprintApiClientError,
-            ) as exception:
-                errors["base"] = self._handle_client_error(exception)
-            else:
-                await self.async_set_unique_id(
-                    # Do NOT use this in production code
-                    # The unique_id should never be something that can change
-                    # https://developers.home-assistant.io/docs/config_entries_config_flow_handler#unique-ids
-                    unique_id=slugify(user_input[CONF_USERNAME])
-                )
-                self._abort_if_unique_id_configured()
+            winter_temp = user_input[CONF_WINTER_MAX_TEMP]
+            summer_temp = user_input[CONF_SUMMER_MIN_TEMP]
+            if winter_temp >= summer_temp:
+                errors["base"] = "winter_summer_temp_conflict"
+            elif (summer_temp - winter_temp) <= 0.1:
+                errors["base"] = "winter_summer_temp_too_close"
+
+            if not errors:
+                day_hour = int(user_input[CONF_CLIMATE_DAY_START_HOUR])
+                night_hour = int(user_input[CONF_CLIMATE_NIGHT_START_HOUR])
+                if day_hour >= night_hour:
+                    errors["base"] = "day_night_hour_conflict"
+
+            if not errors:
                 return self.async_create_entry(
-                    title=user_input[CONF_USERNAME],
+                    title="Offdelay",
                     data=user_input,
                 )
 
@@ -73,25 +62,68 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(
-                        CONF_USERNAME,
-                        default=(user_input or {}).get(CONF_USERNAME, vol.UNDEFINED),
-                    ): selector.TextSelector(
-                        selector.TextSelectorConfig(
-                            type=selector.TextSelectorType.TEXT,
+                        CONF_WINTER_MAX_TEMP,
+                        default=(user_input or {}).get(CONF_WINTER_MAX_TEMP, 20.0),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            unit_of_measurement=UnitOfTemperature.CELSIUS,
+                            step=0.1,
                         ),
                     ),
-                    vol.Required(CONF_PASSWORD): selector.TextSelector(
-                        selector.TextSelectorConfig(
-                            type=selector.TextSelectorType.PASSWORD,
+                    vol.Required(
+                        CONF_SUMMER_MIN_TEMP,
+                        default=(user_input or {}).get(CONF_SUMMER_MIN_TEMP, 21.0),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            unit_of_measurement=UnitOfTemperature.CELSIUS,
+                            step=0.1,
                         ),
                     ),
                     vol.Optional(
-                        CONF_PERSONS,
-                        default=(user_input or {}).get(CONF_PERSONS, []),
+                        CONF_CLIMATES,
+                        default=(user_input or {}).get(CONF_CLIMATES, []),
                     ): selector.EntitySelector(
                         selector.EntitySelectorConfig(
-                            domain="person",
+                            domain="climate",
                             multiple=True,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_CLIMATE_DELTA_TOLERANCE,
+                        default=(user_input or {}).get(
+                            CONF_CLIMATE_DELTA_TOLERANCE, 0.5
+                        ),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            unit_of_measurement=UnitOfTemperature.CELSIUS,
+                            step=0.1,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_CLIMATE_DAY_START_HOUR,
+                        default=(user_input or {}).get(CONF_CLIMATE_DAY_START_HOUR, 8),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            min=0,
+                            max=23,
+                            step=1,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_CLIMATE_NIGHT_START_HOUR,
+                        default=(user_input or {}).get(
+                            CONF_CLIMATE_NIGHT_START_HOUR, 17
+                        ),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            min=0,
+                            max=23,
+                            step=1,
                         ),
                     ),
                 },
@@ -113,18 +145,20 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors = {}
         if user_input is not None:
-            try:
-                await self._test_credentials(
-                    username=user_input[CONF_USERNAME],
-                    password=user_input[CONF_PASSWORD],
-                )
-            except (
-                IntegrationBlueprintApiClientAuthenticationError,
-                IntegrationBlueprintApiClientCommunicationError,
-                IntegrationBlueprintApiClientError,
-            ) as exception:
-                errors["base"] = self._handle_client_error(exception)
-            else:
+            winter_temp = user_input[CONF_WINTER_MAX_TEMP]
+            summer_temp = user_input[CONF_SUMMER_MIN_TEMP]
+            if winter_temp >= summer_temp:
+                errors["base"] = "winter_summer_temp_conflict"
+            elif (summer_temp - winter_temp) <= 0.1:
+                errors["base"] = "winter_summer_temp_too_close"
+
+            if not errors:
+                day_hour = int(user_input[CONF_CLIMATE_DAY_START_HOUR])
+                night_hour = int(user_input[CONF_CLIMATE_NIGHT_START_HOUR])
+                if day_hour >= night_hour:
+                    errors["base"] = "day_night_hour_conflict"
+
+            if not errors:
                 return self.async_update_reload_and_abort(
                     entry,
                     data=user_input,
@@ -135,52 +169,67 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(
-                        CONF_USERNAME,
-                        default=entry.data.get(CONF_USERNAME),
-                    ): selector.TextSelector(
-                        selector.TextSelectorConfig(
-                            type=selector.TextSelectorType.TEXT,
+                        CONF_WINTER_MAX_TEMP,
+                        default=entry.data.get(CONF_WINTER_MAX_TEMP, 20.0),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            unit_of_measurement=UnitOfTemperature.CELSIUS,
+                            step=0.1,
                         ),
                     ),
                     vol.Required(
-                        CONF_PASSWORD,
-                    ): selector.TextSelector(
-                        selector.TextSelectorConfig(
-                            type=selector.TextSelectorType.PASSWORD,
+                        CONF_SUMMER_MIN_TEMP,
+                        default=entry.data.get(CONF_SUMMER_MIN_TEMP, 21.0),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            unit_of_measurement=UnitOfTemperature.CELSIUS,
+                            step=0.1,
                         ),
                     ),
                     vol.Optional(
-                        CONF_PERSONS,
-                        default=entry.data.get(CONF_PERSONS, []),
+                        CONF_CLIMATES,
+                        default=entry.data.get(CONF_CLIMATES, []),
                     ): selector.EntitySelector(
                         selector.EntitySelectorConfig(
-                            domain="person",
+                            domain="climate",
                             multiple=True,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_CLIMATE_DELTA_TOLERANCE,
+                        default=entry.data.get(CONF_CLIMATE_DELTA_TOLERANCE, 0.5),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            unit_of_measurement=UnitOfTemperature.CELSIUS,
+                            step=0.1,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_CLIMATE_DAY_START_HOUR,
+                        default=entry.data.get(CONF_CLIMATE_DAY_START_HOUR, 8),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            min=0,
+                            max=23,
+                            step=1,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_CLIMATE_NIGHT_START_HOUR,
+                        default=entry.data.get(CONF_CLIMATE_NIGHT_START_HOUR, 17),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            min=0,
+                            max=23,
+                            step=1,
                         ),
                     ),
                 },
             ),
             errors=errors,
         )
-
-    async def _test_credentials(self, username: str, password: str) -> None:
-        """Validate credentials."""
-        client = IntegrationBlueprintApiClient(
-            username=username,
-            password=password,
-            session=async_create_clientsession(self.hass),
-        )
-        await client.async_get_data()
-
-    @staticmethod
-    def _handle_client_error(exception: IntegrationBlueprintApiClientError) -> str:
-        """Handle API client errors and return appropriate error key.
-
-        Maps exception types to user-facing error messages defined in translations.
-
-        Returns:
-            str: The error key.
-
-        """
-        LOGGER.warning(exception)
-        return ERROR_MAP.get(type(exception), "unknown")

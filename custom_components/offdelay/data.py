@@ -10,7 +10,6 @@ from homeassistant.config_entries import ConfigEntry
 if TYPE_CHECKING:
     from homeassistant.loader import Integration
 
-    from .api import IntegrationBlueprintApiClient
     from .coordinator import OffdelayDataUpdateCoordinator
 
 
@@ -21,6 +20,5 @@ type OffdelayConfigEntry = ConfigEntry[OffdelayData]
 class OffdelayData:
     """Data for the Offdelay."""
 
-    client: IntegrationBlueprintApiClient
     coordinator: OffdelayDataUpdateCoordinator
     integration: Integration

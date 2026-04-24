@@ -2,7 +2,7 @@
 
 from logging import Logger, getLogger
 
-from homeassistant.const import ATTR_ENTITY_ID, Platform
+from homeassistant.const import Platform
 
 LOGGER: Logger = getLogger(__package__)
 
@@ -10,17 +10,20 @@ DOMAIN = "offdelay"  # TEST COMMENT: Agent workflow test - please run tests and 
 # Attribution text shown in Home Assistant UI for this integration
 ATTRIBUTION = "Data provided by http://offdelay.be/"
 
-# Proximity configuration
-CONF_PERSONS = "persons"
-PROXIMITY_NAME = "home"
-PROXIMITY_ZONE = "zone.home"
-PROXIMITY_TOLERANCE = 20
-
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.BINARY_SENSOR,
-    Platform.SWITCH,
 ]
 
-# Config entry options for proximity
-ATTR_PERSONS = ATTR_ENTITY_ID
+# Climate mode configuration
+CONF_WINTER_MAX_TEMP = "winter_max_temp"
+CONF_SUMMER_MIN_TEMP = "summer_min_temp"
+CONF_CLIMATES = "climates"
+CONF_CLIMATE_DELTA_TOLERANCE = "climate_delta_tolerance"
+CONF_CLIMATE_DAY_START_HOUR = "climate_day_start_hour"
+CONF_CLIMATE_NIGHT_START_HOUR = "climate_night_start_hour"
+
+# Climate mode internal data keys
+DATA_CLIMATE_MODE = "climate_mode"
+DATA_CLIMATE_MAX_POS_DELTA = "climate_max_pos_delta"
+DATA_CLIMATE_MAX_NEG_DELTA = "climate_max_neg_delta"

@@ -15,13 +15,24 @@ if TYPE_CHECKING:
 
     from .data import OffdelayConfigEntry
 
+from .const import DATA_CLIMATE_MODE
 from .entity import OffdelayEntity
 
 ENTITY_DESCRIPTIONS = (
     BinarySensorEntityDescription(
-        key="is_home",
-        translation_key="is_home",
-        icon="mdi:home-account",
+        key="climate_mode_winter",
+        translation_key="climate_mode_winter",
+        icon="mdi:snowflake",
+    ),
+    BinarySensorEntityDescription(
+        key="climate_mode_summer",
+        translation_key="climate_mode_summer",
+        icon="mdi:white-balance-sunny",
+    ),
+    BinarySensorEntityDescription(
+        key="climate_mode_winter_summer",
+        translation_key="climate_mode_winter_summer",
+        icon="mdi:sun-snowflake-variant",
     ),
 )
 
@@ -47,4 +58,11 @@ class OffdelayBinarySensor(OffdelayEntity, BinarySensorEntity):
     @property
     def is_on(self) -> bool:
         """Return True if the sensor is on, False otherwise."""
-        return self.coordinator.data.get(self.entity_description.key, False)
+        key = self.entity_description.key
+        if key == "climate_mode_winter":
+            return self.coordinator.data.get(DATA_CLIMATE_MODE) == "winter"
+        if key == "climate_mode_summer":
+            return self.coordinator.data.get(DATA_CLIMATE_MODE) == "summer"
+        if key == "climate_mode_winter_summer":
+            return self.coordinator.data.get(DATA_CLIMATE_MODE) in {"winter", "summer"}
+        return self.coordinator.data.get(key, False)

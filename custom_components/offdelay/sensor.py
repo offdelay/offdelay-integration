@@ -11,6 +11,7 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import UnitOfTemperature
 
+from .const import CONF_CLIMATES, DATA_CLIMATE_MAX_NEG_DELTA, DATA_CLIMATE_MAX_POS_DELTA
 from .entity import OffdelayEntity
 
 if TYPE_CHECKING:
@@ -27,29 +28,39 @@ ENTITY_DESCRIPTIONS = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
     ),
     SensorEntityDescription(
-        key="weather_condition_rank_today",
-        translation_key="weather_condition_rank_today",
-        icon="mdi:weather-sunny",
+        key="weather_min_temp_today",
+        translation_key="weather_min_temp_today",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
     ),
     SensorEntityDescription(
-        key="weather_condition_rank_tomorrow",
-        translation_key="weather_condition_rank_tomorrow",
-        icon="mdi:weather-sunny",
+        key="weather_max_temp_tomorrow",
+        translation_key="weather_max_temp_tomorrow",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
     ),
     SensorEntityDescription(
-        key="weather_condition_today",
-        translation_key="weather_condition_today",
-        icon="mdi:weather-partly-cloudy",
+        key="weather_min_temp_tomorrow",
+        translation_key="weather_min_temp_tomorrow",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+    ),
+)
+
+CLIMATE_ENTITY_DESCRIPTIONS = (
+    SensorEntityDescription(
+        key=DATA_CLIMATE_MAX_POS_DELTA,
+        translation_key="climate_max_pos_delta",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        icon="mdi:arrow-up-bold",
     ),
     SensorEntityDescription(
-        key="weather_condition_tomorrow",
-        translation_key="weather_condition_tomorrow",
-        icon="mdi:weather-partly-cloudy",
-    ),
-    SensorEntityDescription(
-        key="home_status",
-        translation_key="home_status",
-        icon="mdi:home",
+        key=DATA_CLIMATE_MAX_NEG_DELTA,
+        translation_key="climate_max_neg_delta",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        icon="mdi:arrow-down-bold",
     ),
 )
 
@@ -60,12 +71,15 @@ async def async_setup_entry(  # noqa: RUF029
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
+    descriptions = list(ENTITY_DESCRIPTIONS)
+    if entry.data.get(CONF_CLIMATES):
+        descriptions.extend(CLIMATE_ENTITY_DESCRIPTIONS)
     async_add_entities(
         OffdelaySensor(
             coordinator=entry.runtime_data.coordinator,
             entity_description=entity_description,
         )
-        for entity_description in ENTITY_DESCRIPTIONS
+        for entity_description in descriptions
     )
 
 
