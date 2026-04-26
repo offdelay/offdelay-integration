@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+    from .coordinator import OffdelayDataUpdateCoordinator
     from .data import OffdelayConfigEntry
 
 from .const import CONF_CLIMATES_BOOST, DATA_CLIMATE_MODE
@@ -97,7 +98,7 @@ class OffdelayBoostBinarySensor(OffdelayEntity, BinarySensorEntity):
 
     def __init__(
         self,
-        coordinator,
+        coordinator: OffdelayDataUpdateCoordinator,
         entity_description: BinarySensorEntityDescription,
         climate_entity_id: str,
         boost_type: str,

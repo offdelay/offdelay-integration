@@ -189,7 +189,7 @@ class OffdelayDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Night window with climates: check indoor temps for mode switching
         return self._climate_mode_logic(climates, current_mode)
 
-    def set_boost_active(self, climate_entity_id: str, active: bool) -> None:
+    def set_boost_active(self, climate_entity_id: str, active: bool) -> None:  # noqa: FBT001
         """Set boost state for a climate entity."""
         self.boost_state[climate_entity_id] = active
         self.async_set_updated_data(self.data)
