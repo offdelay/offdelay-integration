@@ -7,6 +7,9 @@
                     "winter_max_temp": "Winter Mode Max Outside Temperature",
                     "summer_min_temp": "Summer Mode Min Outside Temperature",
                     "climates": "Climate Entities",
+                    "occupancy_sensors": "Occupancy Sensors",
+                    "guest_turn_on_delay": "Guest Mode Turn On Delay (minutes)",
+                    "guest_turn_off_delay": "Guest Mode Turn Off Delay (minutes)",
                     "climate_delta_tolerance": "Climate Delta Tolerance",
                     "climate_day_start_hour": "Climate Day Start Hour",
                     "climate_night_start_hour": "Climate Night Start Hour"
@@ -18,6 +21,9 @@
                     "winter_max_temp": "Winter Mode Max Outside Temperature",
                     "summer_min_temp": "Summer Mode Min Outside Temperature",
                     "climates": "Climate Entities",
+                    "occupancy_sensors": "Occupancy Sensors",
+                    "guest_turn_on_delay": "Guest Mode Turn On Delay (minutes)",
+                    "guest_turn_off_delay": "Guest Mode Turn Off Delay (minutes)",
                     "climate_delta_tolerance": "Climate Delta Tolerance",
                     "climate_day_start_hour": "Climate Day Start Hour",
                     "climate_night_start_hour": "Climate Night Start Hour"
@@ -26,7 +32,7 @@
         },
         "error": {
             "winter_summer_temp_conflict": "Winter max temperature must be lower than summer min temperature.",
-            "winter_summer_temp_too_close": "The difference between winter and summer temperatures must be greater than 0.1°C.",
+            "winter_summer_temp_too_close": "The difference between winter and summer temperatures must be greater than 0.1\u00b0C.",
             "day_night_hour_conflict": "Day start hour must be less than night start hour."
         },
         "abort": {
@@ -45,7 +51,12 @@
         "binary_sensor": {
             "climate_mode_winter": { "name": "Climate Mode Winter" },
             "climate_mode_summer": { "name": "Climate Mode Summer" },
-            "climate_mode_winter_summer": { "name": "Climate Mode Winter/Summer" }
+            "climate_mode_winter_summer": { "name": "Climate Mode Winter/Summer" },
+            "is_home": { "name": "Is Home" }
+        },
+        "switch": {
+            "guest_mode": { "name": "Guest Mode" },
+            "vacation_mode": { "name": "Vacation Mode" }
         }
     }
 }

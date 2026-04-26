@@ -13,7 +13,13 @@ ATTRIBUTION = "Data provided by http://offdelay.be/"
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.BINARY_SENSOR,
+    Platform.SWITCH,
 ]
+
+# New configuration keys for presence switches
+CONF_OCCUPANCY_SENSORS = "occupancy_sensors"
+CONF_GUEST_TURN_ON_DELAY = "guest_turn_on_delay"
+CONF_GUEST_TURN_OFF_DELAY = "guest_turn_off_delay"
 
 # Climate mode configuration
 CONF_WINTER_MAX_TEMP = "winter_max_temp"
