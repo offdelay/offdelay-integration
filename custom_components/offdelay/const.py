@@ -31,5 +31,7 @@ CONF_CLIMATE_NIGHT_START_HOUR = "climate_night_start_hour"
 
 # Climate mode internal data keys
 DATA_CLIMATE_MODE = "climate_mode"
-DATA_CLIMATE_MAX_POS_DELTA = "climate_max_pos_delta"
-DATA_CLIMATE_MAX_NEG_DELTA = "climate_max_neg_delta"
+DATA_CLIMATE_DELTA_TO_TARGET = "climate_delta_to_target"
+CLIMATE_MODE_WINTER = "winter"
+CLIMATE_MODE_SUMMER = "summer"
+CLIMATE_MODE_OFF = "off"
