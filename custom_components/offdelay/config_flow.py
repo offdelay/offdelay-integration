@@ -10,6 +10,9 @@ from .const import (
     CONF_CLIMATE_DELTA_TOLERANCE,
     CONF_CLIMATE_NIGHT_START_HOUR,
     CONF_CLIMATES,
+    CONF_GUEST_TURN_OFF_DELAY,
+    CONF_GUEST_TURN_ON_DELAY,
+    CONF_OCCUPANCY_SENSORS,
     CONF_SUMMER_MIN_TEMP,
     CONF_WINTER_MAX_TEMP,
     DOMAIN,
@@ -88,6 +91,35 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         selector.EntitySelectorConfig(
                             domain="climate",
                             multiple=True,
+                        ),
+                    ),
+                    vol.Optional(
+                        CONF_OCCUPANCY_SENSORS,
+                        default=(user_input or {}).get(CONF_OCCUPANCY_SENSORS, []),
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain=["binary_sensor", "sensor"],
+                            multiple=True,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_GUEST_TURN_ON_DELAY,
+                        default=(user_input or {}).get(CONF_GUEST_TURN_ON_DELAY, 5),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            min=0,
+                            step=1,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_GUEST_TURN_OFF_DELAY,
+                        default=(user_input or {}).get(CONF_GUEST_TURN_OFF_DELAY, 15),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            min=0,
+                            step=1,
                         ),
                     ),
                     vol.Required(
@@ -195,6 +227,35 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         selector.EntitySelectorConfig(
                             domain="climate",
                             multiple=True,
+                        ),
+                    ),
+                    vol.Optional(
+                        CONF_OCCUPANCY_SENSORS,
+                        default=entry.data.get(CONF_OCCUPANCY_SENSORS, []),
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain=["binary_sensor", "sensor"],
+                            multiple=True,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_GUEST_TURN_ON_DELAY,
+                        default=entry.data.get(CONF_GUEST_TURN_ON_DELAY, 5),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            min=0,
+                            step=1,
+                        ),
+                    ),
+                    vol.Required(
+                        CONF_GUEST_TURN_OFF_DELAY,
+                        default=entry.data.get(CONF_GUEST_TURN_OFF_DELAY, 15),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            mode="box",
+                            min=0,
+                            step=1,
                         ),
                     ),
                     vol.Required(
