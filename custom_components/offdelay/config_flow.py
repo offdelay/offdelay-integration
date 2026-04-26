@@ -10,6 +10,7 @@ from .const import (
     CONF_CLIMATE_DELTA_TOLERANCE,
     CONF_CLIMATE_NIGHT_START_HOUR,
     CONF_CLIMATES,
+    CONF_CLIMATES_BOOST,
     CONF_SUMMER_MIN_TEMP,
     CONF_WINTER_MAX_TEMP,
     DOMAIN,
@@ -84,6 +85,15 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_CLIMATES,
                         default=(user_input or {}).get(CONF_CLIMATES, []),
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain="climate",
+                            multiple=True,
+                        ),
+                    ),
+                    vol.Optional(
+                        CONF_CLIMATES_BOOST,
+                        default=(user_input or {}).get(CONF_CLIMATES_BOOST, []),
                     ): selector.EntitySelector(
                         selector.EntitySelectorConfig(
                             domain="climate",
@@ -191,6 +201,15 @@ class OffdelayFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_CLIMATES,
                         default=entry.data.get(CONF_CLIMATES, []),
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain="climate",
+                            multiple=True,
+                        ),
+                    ),
+                    vol.Optional(
+                        CONF_CLIMATES_BOOST,
+                        default=entry.data.get(CONF_CLIMATES_BOOST, []),
                     ): selector.EntitySelector(
                         selector.EntitySelectorConfig(
                             domain="climate",

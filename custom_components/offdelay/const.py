@@ -13,6 +13,7 @@ ATTRIBUTION = "Data provided by http://offdelay.be/"
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.BINARY_SENSOR,
+    Platform.SWITCH,
 ]
 
 # Climate mode configuration
@@ -22,6 +23,7 @@ CONF_CLIMATES = "climates"
 CONF_CLIMATE_DELTA_TOLERANCE = "climate_delta_tolerance"
 CONF_CLIMATE_DAY_START_HOUR = "climate_day_start_hour"
 CONF_CLIMATE_NIGHT_START_HOUR = "climate_night_start_hour"
+CONF_CLIMATES_BOOST = "climates_boost"  # Climates boost (list of climate entity ids)
 
 # Climate mode internal data keys
 DATA_CLIMATE_MODE = "climate_mode"

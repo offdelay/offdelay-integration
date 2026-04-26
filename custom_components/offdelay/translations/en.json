@@ -7,6 +7,7 @@
                     "winter_max_temp": "Winter Mode Max Outside Temperature",
                     "summer_min_temp": "Summer Mode Min Outside Temperature",
                     "climates": "Climate Entities",
+                    "climates_boost": "Boost Heatpump Climates",
                     "climate_delta_tolerance": "Climate Delta Tolerance",
                     "climate_day_start_hour": "Climate Day Start Hour",
                     "climate_night_start_hour": "Climate Night Start Hour"
@@ -18,6 +19,7 @@
                     "winter_max_temp": "Winter Mode Max Outside Temperature",
                     "summer_min_temp": "Summer Mode Min Outside Temperature",
                     "climates": "Climate Entities",
+                    "climates_boost": "Boost Heatpump Climates",
                     "climate_delta_tolerance": "Climate Delta Tolerance",
                     "climate_day_start_hour": "Climate Day Start Hour",
                     "climate_night_start_hour": "Climate Night Start Hour"
